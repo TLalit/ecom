@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { redirect, RedirectType } from "next/navigation";
+import { RedirectType, redirect } from "next/navigation";
 import { PropsWithChildren } from "react";
 const sidebarItems: {
   name: string;
@@ -83,7 +83,7 @@ export default async function AdminRootLayout({ children }: PropsWithChildren) {
         </header>
         <div className="relative flex flex-1">
           <aside className="flex w-14 flex-col border-r">
-            <nav className="box-border flex flex-1 flex-col items-center gap-4 py-2 ">
+            <nav className="box-border flex flex-1 flex-col items-center gap-4 py-2">
               {sidebarItems.map((item) => (
                 <Tooltip key={item.name}>
                   <TooltipTrigger
@@ -115,7 +115,7 @@ export default async function AdminRootLayout({ children }: PropsWithChildren) {
             </nav>
           </aside>
 
-          <ScrollArea className="flex-co flex max-h-[calc(100vh-theme(space.16))] flex-1">
+          <ScrollArea className="flex-co flex max-h-[calc(100vh-theme(space.16))] flex-1 bg-accent">
             <div className="flex flex-1 flex-col p-2">{children}</div>
           </ScrollArea>
         </div>

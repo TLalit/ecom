@@ -76,7 +76,7 @@ export const MovingCards = ({
         ref={scrollerRef}
         className={cn(
           "flex flex-col flex-nowrap gap-4",
-          start && "animate-scroll-up ",
+          start && "animate-scroll-up",
           pauseOnHover && "hover:[animation-play-state:paused]",
         )}
       >

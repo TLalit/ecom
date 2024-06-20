@@ -9,7 +9,7 @@ interface Props {}
 export const QualitySection: FC<PropsWithChildren<Props>> = () => {
   return (
     <section className="container flex min-h-[50vh] flex-col gap-10 lg:flex-row">
-      <div className="flex flex-1 flex-col items-center justify-center gap-4 ">
+      <div className="flex flex-1 flex-col items-center justify-center gap-4">
         <p className="w-full">Quality</p>
         <h1 className="text-5xl font-bold">
           Experience the Best in Design and Service

@@ -125,7 +125,7 @@ export const Footer = () => {
       <footer className="container pt-20">
         <Separator />
         <section>
-          <div className="container mx-auto flex flex-col justify-between gap-10  py-10 lg:flex-row">
+          <div className="container mx-auto flex flex-col justify-between gap-10 py-10 lg:flex-row">
             <Link href="/" className="flex max-w-min flex-col">
               <Store />
             </Link>
@@ -142,7 +142,7 @@ export const Footer = () => {
                   return (
                     <p
                       key={link.label}
-                      className="flex gap-2 rounded-lg p-1 transition-colors "
+                      className="flex gap-2 rounded-lg p-1 transition-colors"
                     >
                       <span className="w-9 font-bold">{link.label}</span>:
                       <span>{link.description}</span>
@@ -179,7 +179,7 @@ export const Footer = () => {
           </div>
         </section>
         <Separator />
-        <section className="container mx-auto flex flex-col justify-center gap-10 py-10 lg:flex-row ">
+        <section className="container mx-auto flex flex-col justify-center gap-10 py-10 lg:flex-row">
           <div className="flex flex-1 flex-col items-center gap-4">
             <span className="text-xl font-bold">Fast Shipping Worldwide</span>
             <div className="flex flex-row gap-2">

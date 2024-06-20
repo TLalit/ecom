@@ -19,8 +19,8 @@ const Progress = React.forwardRef<
     {...props}
   >
     <ProgressPrimitive.Indicator
-      className={clsx("h-full w-full flex-1 bg-primary transition-all ", {
-        "animate-progress origin-left-right": typeof value === "undefined",
+      className={clsx("h-full w-full flex-1 bg-primary transition-all", {
+        "origin-left-right animate-progress": typeof value === "undefined",
       })}
       style={
         typeof value === "undefined"

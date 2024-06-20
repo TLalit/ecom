@@ -167,7 +167,7 @@ export function DataTable<TData extends DataTableState, TValue>({
                 const isSortingAsc = context.column.getIsSorted() === "asc";
                 return (
                   <TableHead key={header.id} className="px-2">
-                    <div className="flex items-center gap-2 justify-between">
+                    <div className="flex items-center justify-between gap-2">
                       {header.isPlaceholder
                         ? null
                         : flexRender(header.column.columnDef.header, context)}

@@ -12,7 +12,7 @@ export const HeroSection: FC<PropsWithChildren<Props>> = () => {
   return (
     <>
       <section className="container flex min-h-[50vh] flex-col gap-10 lg:flex-row">
-        <div className="flex flex-1 flex-col items-center justify-center gap-4 ">
+        <div className="flex flex-1 flex-col items-center justify-center gap-4">
           <h1 className="w-full text-5xl font-bold">
             Designing <FlipWords words={words} />
           </h1>
@@ -34,7 +34,7 @@ export const HeroSection: FC<PropsWithChildren<Props>> = () => {
             fill
           />
         </div>
-        <div className="flex flex-1 flex-col items-center justify-center gap-4 ">
+        <div className="flex flex-1 flex-col items-center justify-center gap-4">
           <h1 className="text-5xl font-bold">
             Unleash Your Creativity with Our Custom Design and Manufacturing
             Capabilities
@@ -69,7 +69,7 @@ export const HeroSectionProductHighlight = () => {
   const secondPart = product.slice(half, 2 * half);
 
   return (
-    <div className="flex flex-1  overflow-y-hidden ">
+    <div className="flex flex-1 overflow-y-hidden">
       <MovingCards className="h-[50vh] px-2" speed="slow" items={firstPart} />
       <MovingCards
         speed="slow"

@@ -9,7 +9,7 @@ const collections = Array.from({ length: 12 }, (_, index) => ({
 
 export const Collections = () => {
   return (
-    <section className="container grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <section className="container grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {collections.map((collection, index) => (
         <CollectionCard collection={collection} key={index} />
       ))}

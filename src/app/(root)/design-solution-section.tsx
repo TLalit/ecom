@@ -13,8 +13,8 @@ export const DesignSolutionSection: FC<PropsWithChildren<Props>> = () => {
         alt="Creativity image"
         fill
       />
-      <div className="z-10 flex flex-1  bg-black/40 ">
-        <div className="container flex flex-1 flex-col justify-center gap-4 text-white ">
+      <div className="z-10 flex flex-1 bg-black/40">
+        <div className="container flex flex-1 flex-col justify-center gap-4 text-white">
           <h1 className="text-5xl font-bold">
             Discover Unique Design Solutions Here
           </h1>

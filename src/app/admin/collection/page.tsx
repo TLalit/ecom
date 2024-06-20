@@ -142,7 +142,7 @@ export default function Page() {
     },
   });
   return (
-    <main className="container flex flex-col gap-5">
+    <main className="container flex flex-1 flex-col gap-5 rounded-2xl bg-background">
       <section className="relative flex items-center justify-between gap-5">
         <h1 className="text-2xl font-bold">Collection</h1>
         <CreateUpdateCollectionSheet mode="create">

@@ -12,7 +12,7 @@ export default async function RootLayout({
     return redirect("/", RedirectType.replace);
   }
   return (
-    <main className="flex min-h-screen flex-row relative">
+    <main className="relative flex min-h-screen flex-row">
       <div className="z-10 flex flex-1 flex-col items-center justify-center p-4">
         {children}
       </div>

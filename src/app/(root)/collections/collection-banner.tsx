@@ -9,8 +9,8 @@ export const CollectionBanner = () => {
         alt="Creativity image"
         fill
       />
-      <div className="z-10 flex flex-1  bg-black/50 ">
-        <div className="container flex flex-1 flex-col justify-center gap-4 text-white ">
+      <div className="z-10 flex flex-1 bg-black/50">
+        <div className="container flex flex-1 flex-col justify-center gap-4 text-white">
           <h1 className="text-5xl font-bold">Explore Our Collections</h1>
           <p className="text-lg">
             Discover our curated collections of products, each tailored to
