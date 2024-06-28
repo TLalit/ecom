@@ -1,4 +1,6 @@
 "use client";
+import { getCollection } from "@/actions/collection/collection.actions";
+import { confirmBeforeAction } from "@/components/global/confirmation-dialog";
 import { DataTable, DataTableProps } from "@/components/global/data-table";
 import { FileUploader } from "@/components/global/file-upload";
 import { ImageList } from "@/components/global/image-preview";
@@ -118,7 +120,10 @@ const columns: DataTableProps<
               <span>Details</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem destructive>
+            <DropdownMenuItem
+              destructive
+              onClick={() => confirmBeforeAction(async () => {})}
+            >
               <LucideIcon name="Trash" />
               <span>Delete</span>
             </DropdownMenuItem>
@@ -131,18 +136,10 @@ const columns: DataTableProps<
 export default function Page() {
   const { data, isFetching } = useQuery({
     queryKey: ["/api/admin/collection"],
-    queryFn: async () => {
-      const searchParams = new URLSearchParams();
-      searchParams.append("page", "0");
-      return axios
-        .get<GetCollectionResponse>(
-          "/api/admin/collection?" + searchParams.toString(),
-        )
-        .then((res) => res.data);
-    },
+    queryFn: async () => getCollection(),
   });
   return (
-    <main className="container flex flex-1 flex-col gap-5 rounded-2xl bg-background">
+    <main className="container flex min-h-[calc(100vh-theme(space.20))] flex-1 flex-col gap-5 rounded-2xl bg-background py-8">
       <section className="relative flex items-center justify-between gap-5">
         <h1 className="text-2xl font-bold">Collection</h1>
         <CreateUpdateCollectionSheet mode="create">
