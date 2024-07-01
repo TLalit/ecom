@@ -1,5 +1,8 @@
 "use client";
-import { getCollection } from "@/actions/collection/collection.actions";
+import {
+  createCollectionAction,
+  getCollectionAction,
+} from "@/actions/collection.actions";
 import { confirmBeforeAction } from "@/components/global/confirmation-dialog";
 import { DataTable, DataTableProps } from "@/components/global/data-table";
 import { FileUploader } from "@/components/global/file-upload";
@@ -39,21 +42,18 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
-import { collectionStatus, visibilityStatus } from "@/constants";
+import { collectionStatusOptions, visibilityStatusOptions } from "@/constants";
 import { useFileUploadMutation } from "@/hooks/apiHooks";
 import { errorHandler } from "@/lib/query.helper";
 import { generateSlug } from "@/lib/string.helper";
 import {
   GetCollectionResponse,
-  PostCollectionRequest,
-  PostCollectionRequestValidator,
-  PostCollectionResponse,
   StatusEnum,
   VisibilityEnum,
 } from "@/types/collection.api.types";
+import { CreateCollectionSchema } from "@/validators/collection.validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { PropsWithChildren, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -135,8 +135,8 @@ const columns: DataTableProps<
 ];
 export default function Page() {
   const { data, isFetching } = useQuery({
-    queryKey: ["/api/admin/collection"],
-    queryFn: async () => getCollection(),
+    queryKey: ["getCollectionAction"],
+    queryFn: async () => getCollectionAction(),
   });
   return (
     <main className="container flex min-h-[calc(100vh-theme(space.20))] flex-1 flex-col gap-5 rounded-2xl bg-background py-8">
@@ -158,7 +158,7 @@ export default function Page() {
   );
 }
 
-const createCollectionSchema = PostCollectionRequestValidator.omit({
+const createCollectionClientSchema = CreateCollectionSchema.omit({
   imageId: true,
 }).merge(
   z.object({
@@ -175,25 +175,24 @@ const CreateUpdateCollectionSheet = ({
 }>) => {
   const queryClient = useQueryClient();
   const [open, onOpenChange] = useState(false);
-  const form = useForm<z.infer<typeof createCollectionSchema>>({
+  const form = useForm<z.infer<typeof createCollectionClientSchema>>({
     defaultValues: {
       status: StatusEnum.ACTIVE,
       visibility: VisibilityEnum.PUBLIC,
       image: [],
     },
-    resolver: zodResolver(createCollectionSchema),
+    resolver: zodResolver(createCollectionClientSchema),
   });
   const fileUploadMutation = useFileUploadMutation();
   const createCollectionMutation = useMutation({
     onError: errorHandler(),
-    mutationFn: async (data: PostCollectionRequest) =>
-      axios.post<PostCollectionResponse>("/api/admin/collection", data),
+    mutationFn: createCollectionAction,
     onSuccess: () => {
       form.reset();
       onOpenChange(false);
       toast.success("Collection created successfully");
       queryClient.refetchQueries({
-        queryKey: ["/api/admin/collection"],
+        queryKey: ["getCollectionAction"],
       });
     },
   });
@@ -277,7 +276,7 @@ const CreateUpdateCollectionSheet = ({
                           <SelectValue placeholder="Status" />
                         </SelectTrigger>
                         <SelectContent>
-                          {collectionStatus.map((status) => (
+                          {collectionStatusOptions.map((status) => (
                             <SelectItem key={status.value} value={status.value}>
                               {status.label}
                             </SelectItem>
@@ -301,7 +300,7 @@ const CreateUpdateCollectionSheet = ({
                           <SelectValue placeholder="Status" />
                         </SelectTrigger>
                         <SelectContent>
-                          {visibilityStatus.map((status) => (
+                          {visibilityStatusOptions.map((status) => (
                             <SelectItem key={status.value} value={status.value}>
                               {status.label}
                             </SelectItem>
