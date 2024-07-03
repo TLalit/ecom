@@ -10,7 +10,7 @@ import { z } from "zod";
 import { getPaginationValues } from "./action.helpers";
 import { PaginationParams } from "./action.types";
 
-export interface GetCollectionPayload extends PaginationParams {}
+export interface GetCollectionPayload extends PaginationParams { }
 export const getCollectionAction = async ({
   ...paginationParams
 }: GetCollectionPayload = {}) => {
@@ -75,10 +75,10 @@ export const getCollectionAction = async ({
     visibility: collection.visibility as VisibilityEnum,
     image: collection.image
       ? {
-          id: collection.image.id,
-          url: createMainUrl(collection.image.url),
-          thumbnailUrl: createThumbnailUrl(collection.image.url),
-        }
+        id: collection.image.id,
+        url: createMainUrl(collection.image.url),
+        thumbnailUrl: createThumbnailUrl(collection.image.url),
+      }
       : null,
   }));
 
@@ -137,10 +137,10 @@ export const getCollectionBySlugAction = async ({ slug }: { slug: string }) => {
     visibility: collectionBySlug.visibility as VisibilityEnum,
     image: collectionBySlug.image
       ? {
-          id: collectionBySlug.image.id,
-          url: createMainUrl(collectionBySlug.image.url),
-          thumbnailUrl: createThumbnailUrl(collectionBySlug.image.url),
-        }
+        id: collectionBySlug.image.id,
+        url: createMainUrl(collectionBySlug.image.url),
+        thumbnailUrl: createThumbnailUrl(collectionBySlug.image.url),
+      }
       : null,
   };
   return collectionWithImageUrls;
@@ -173,7 +173,6 @@ export const createCollectionAction = async (
 };
 
 export const deleteCollectionByIdAction = async ({ id }: { id: string }) => {
-  const isDeleted = await db.delete(collection).where(eq(collection.id, id));
-
-  return true;
-};
+  // await new Promise((res, rej) => { setTimeout(() => rej(new Error('please work')), 2000) })
+  return await db.delete(collection).where(eq(collection.id, id));
+}

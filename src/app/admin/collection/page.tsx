@@ -58,81 +58,83 @@ import { PropsWithChildren, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { ActionsDropdown } from "./components/ActionsDropdown";
 const columns: DataTableProps<
   GetCollectionResponse["collections"][0]
 >["columns"] = [
-  { header: "Title", accessorKey: "title", enableSorting: true },
-  {
-    header: "Slug",
-    accessorKey: "slug",
-    enableSorting: true,
-  },
-  {
-    header: "Status",
-    accessorKey: "status",
-  },
-  {
-    header: "Visibility",
-    accessorKey: "visibility",
-  },
-  {
-    header: "Image",
-    accessorKey: "image",
-    cell: ({ row }) => {
-      return row.original.image ? (
-        <ImageList
-          images={[
-            {
-              src: row.original.image.thumbnailUrl,
-              width: 40,
-              height: 40,
-              className: "aspect-square",
-            },
-          ]}
-        />
-      ) : null;
+    { header: "Title", accessorKey: "title", enableSorting: true },
+    {
+      header: "Slug",
+      accessorKey: "slug",
+      enableSorting: true,
     },
-  },
-  {
-    header: "Actions",
-    accessorKey: "id",
-    cell: ({}) => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger className="p-2">
-            <LucideIcon name="EllipsisVertical" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem>
-              <LucideIcon name="PenLine" />
-              <span>Edit</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <LucideIcon name="SquarePlus" />
-              <span>Add Products</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <LucideIcon name="Eye" />
-              <span>View Products</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <LucideIcon name="Info" />
-              <span>Details</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              destructive
-              onClick={() => confirmBeforeAction(async () => {})}
-            >
-              <LucideIcon name="Trash" />
-              <span>Delete</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+    {
+      header: "Status",
+      accessorKey: "status",
     },
-  },
-];
+    {
+      header: "Visibility",
+      accessorKey: "visibility",
+    },
+    {
+      header: "Image",
+      accessorKey: "image",
+      cell: ({ row }) => {
+        return row.original.image ? (
+          <ImageList
+            images={[
+              {
+                src: row.original.image.thumbnailUrl,
+                width: 40,
+                height: 40,
+                className: "aspect-square",
+              },
+            ]}
+          />
+        ) : null;
+      },
+    },
+    {
+      header: "Actions",
+      accessorKey: "id",
+      cell: ({ row }) => {
+        return (
+          <ActionsDropdown row={row} />
+          // <DropdownMenu>
+          //   <DropdownMenuTrigger className="p-2">
+          //     <LucideIcon name="EllipsisVertical" />
+          //   </DropdownMenuTrigger>
+          //   <DropdownMenuContent>
+          //     <DropdownMenuItem>
+          //       <LucideIcon name="PenLine" />
+          //       <span>Edit</span>
+          //     </DropdownMenuItem>
+          //     <DropdownMenuItem>
+          //       <LucideIcon name="SquarePlus" />
+          //       <span>Add Products</span>
+          //     </DropdownMenuItem>
+          //     <DropdownMenuItem>
+          //       <LucideIcon name="Eye" />
+          //       <span>View Products</span>
+          //     </DropdownMenuItem>
+          //     <DropdownMenuItem>
+          //       <LucideIcon name="Info" />
+          //       <span>Details</span>
+          //     </DropdownMenuItem>
+          //     <DropdownMenuSeparator />
+          //     <DropdownMenuItem
+          //       destructive
+          //       onClick={() => confirmBeforeAction(async () => {})}
+          //     >
+          //       <LucideIcon name="Trash" />
+          //       <span>Delete</span>
+          //     </DropdownMenuItem>
+          //   </DropdownMenuContent>
+          // </DropdownMenu>
+        );
+      },
+    },
+  ];
 export default function Page() {
   const { data, isFetching } = useQuery({
     queryKey: ["getCollectionAction"],

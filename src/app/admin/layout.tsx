@@ -13,37 +13,38 @@ import {
 } from "@/components/ui/tooltip";
 import { RedirectType, redirect } from "next/navigation";
 import { PropsWithChildren } from "react";
+import { ThemeSwitch } from "../theme-switch";
 const sidebarItems: {
   name: string;
   icon: IconProps["name"];
   href: string;
 }[] = [
-  {
-    name: "Dashboard",
-    icon: "Home",
-    href: "/admin",
-  },
-  {
-    name: "Collection",
-    icon: "LayoutDashboard",
-    href: "/admin/collection",
-  },
-  {
-    name: "Orders",
-    icon: "ShoppingCart",
-    href: "/admin/orders",
-  },
-  {
-    name: "Products",
-    icon: "Package",
-    href: "/admin/products",
-  },
-  {
-    name: "Customers",
-    icon: "Users",
-    href: "/admin/customers",
-  },
-];
+    {
+      name: "Dashboard",
+      icon: "Home",
+      href: "/admin",
+    },
+    {
+      name: "Collection",
+      icon: "LayoutDashboard",
+      href: "/admin/collection",
+    },
+    {
+      name: "Orders",
+      icon: "ShoppingCart",
+      href: "/admin/orders",
+    },
+    {
+      name: "Products",
+      icon: "Package",
+      href: "/admin/products",
+    },
+    {
+      name: "Customers",
+      icon: "Users",
+      href: "/admin/customers",
+    },
+  ];
 export default async function AdminRootLayout({ children }: PropsWithChildren) {
   const session = await auth();
   if (!session) {
@@ -81,6 +82,7 @@ export default async function AdminRootLayout({ children }: PropsWithChildren) {
             </Breadcrumb> */}
 
             <div className="flex-1"></div>
+            <ThemeSwitch />
             <UserMenu className="flex-none" />
           </header>
           <div className="relative flex flex-1">
