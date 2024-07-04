@@ -4,13 +4,14 @@ import { collection, db, upload } from "@/db";
 import { getFirst } from "@/lib/array.helpers";
 import { createMainUrl, createThumbnailUrl } from "@/lib/string.helper";
 import { StatusEnum, VisibilityEnum } from "@/types/collection.api.types";
-import { CreateCollectionSchema } from "@/validators/collection.validators";
+import { CreateCollectionSchema, EdditCollectionSchema } from "@/validators/collection.validators";
 import { and, count, eq, inArray, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { getPaginationValues } from "./action.helpers";
 import { PaginationParams } from "./action.types";
 
 export interface GetCollectionPayload extends PaginationParams { }
+export type GetCollectionActionResponse = Awaited<ReturnType<typeof getCollectionAction>>
 export const getCollectionAction = async ({
   ...paginationParams
 }: GetCollectionPayload = {}) => {
@@ -149,6 +150,7 @@ export const getCollectionBySlugAction = async ({ slug }: { slug: string }) => {
 export const createCollectionAction = async (
   payload: z.infer<typeof CreateCollectionSchema>,
 ) => {
+
   const session = await auth();
 
   if (!session?.user?.roles.includes("admin")) {
@@ -176,3 +178,30 @@ export const deleteCollectionByIdAction = async ({ id }: { id: string }) => {
   // await new Promise((res, rej) => { setTimeout(() => rej(new Error('please work')), 2000) })
   return await db.delete(collection).where(eq(collection.id, id));
 }
+export const editCollectionAction = async (
+
+  payload: z.infer<typeof CreateCollectionSchema> & { id: string },
+
+) => {
+
+  const session = await auth();
+
+  if (!session?.user?.roles.includes("admin")) {
+    throw new Error("Unauthorized");
+  }
+
+  const { success, data, error } = EdditCollectionSchema.safeParse(payload);
+  if (!success) {
+    throw new Error("Invalid Request", {
+      cause: error.errors,
+    });
+  }
+  const { id: collectionId, ...dataToUpdate } = data;
+  const { id } = await db.update(collection).set({
+    ...dataToUpdate,
+    updatedBy: session?.user.id,
+    updatedAt: new Date()
+  }).where(eq(collection.id, collectionId)).returning().then((res) => res[0]);
+  return { id };
+
+};

@@ -1,6 +1,9 @@
 "use client";
 import {
+  GetCollectionActionResponse,
   createCollectionAction,
+  deleteCollectionByIdAction,
+  editCollectionAction,
   getCollectionAction,
 } from "@/actions/collection.actions";
 import { confirmBeforeAction } from "@/components/global/confirmation-dialog";
@@ -47,7 +50,6 @@ import { useFileUploadMutation } from "@/hooks/apiHooks";
 import { errorHandler } from "@/lib/query.helper";
 import { generateSlug } from "@/lib/string.helper";
 import {
-  GetCollectionResponse,
   StatusEnum,
   VisibilityEnum,
 } from "@/types/collection.api.types";
@@ -58,9 +60,10 @@ import { PropsWithChildren, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { ActionsDropdown } from "./components/ActionsDropdown";
+import { Row } from "@tanstack/react-table";
+import { File } from "buffer";
 const columns: DataTableProps<
-  GetCollectionResponse["collections"][0]
+  GetCollectionActionResponse["collections"][0]
 >["columns"] = [
     { header: "Title", accessorKey: "title", enableSorting: true },
     {
@@ -102,7 +105,7 @@ const columns: DataTableProps<
           <ActionsDropdown row={row} />
         );
       },
-    },
+    }
   ];
 export default function Page() {
   const { data, isFetching } = useQuery({
@@ -113,11 +116,13 @@ export default function Page() {
     <main className="container flex min-h-[calc(100vh-theme(space.20))] flex-1 flex-col gap-5 rounded-2xl bg-background py-8">
       <section className="relative flex items-center justify-between gap-5">
         <h1 className="text-2xl font-bold">Collection</h1>
-        <CreateUpdateCollectionSheet mode="create">
-          <Button>
-            <LucideIcon name="Plus" />
-            <span>Add</span>
-          </Button>
+        <CreateUpdateCollectionSheet mode="Create">
+          <SheetTrigger asChild>
+            <Button>
+              <LucideIcon name="Plus" />
+              <span>Add</span>
+            </Button>
+          </SheetTrigger>
         </CreateUpdateCollectionSheet>
       </section>
       <DataTable
@@ -134,23 +139,30 @@ const createCollectionClientSchema = CreateCollectionSchema.omit({
 }).merge(
   z.object({
     image: z
-      .array(z.object({ url: z.string().url(), file: z.any() }))
+      .array(z.object({ url: z.string().url(), file: z.any(), id: z.string().nullish() }))
       .min(1, "Please upload at least one image"),
   }),
 );
 
-const CreateUpdateCollectionSheet = ({
+
+export const CreateUpdateCollectionSheet = ({
   children,
+  mode,
+  row
 }: PropsWithChildren<{
-  mode: "create" | "edit";
+  mode: "Create" | "Edit";
+  row?: GetCollectionActionResponse["collections"][0]
 }>) => {
   const queryClient = useQueryClient();
   const [open, onOpenChange] = useState(false);
   const form = useForm<z.infer<typeof createCollectionClientSchema>>({
     defaultValues: {
-      status: StatusEnum.ACTIVE,
-      visibility: VisibilityEnum.PUBLIC,
-      image: [],
+      description: row?.description ?? null,
+      image: row?.image ? [row?.image] : [],
+      slug: row?.slug,
+      status: row?.status ?? StatusEnum.ACTIVE,
+      title: row?.visibility ?? VisibilityEnum.PUBLIC,
+      visibility: row?.visibility
     },
     resolver: zodResolver(createCollectionClientSchema),
   });
@@ -167,25 +179,56 @@ const CreateUpdateCollectionSheet = ({
       });
     },
   });
-  const onSubmit = form.handleSubmit(async ({ image, ...data }) => {
-    const { id } = await fileUploadMutation.mutateAsync({
-      file: image[0].file,
-      assetType: "image",
-      entityType: "collection",
-    });
-    await createCollectionMutation.mutateAsync({
-      ...data,
-      imageId: id,
-    });
+  const editCollectionMutation = useMutation({
+    onError: errorHandler(),
+    mutationFn: editCollectionAction,
+    onSuccess: () => {
+      form.reset();
+      onOpenChange(false);
+      toast.success("Collection created successfully");
+      queryClient.refetchQueries({
+        queryKey: ["getCollectionAction"],
+      });
+    },
   });
+  const onSubmit = form.handleSubmit(async ({ image, ...data }) => {
+    let imageId = image[0].id ?? ''
+    if (image[0]?.file) {
+      const { id } = await fileUploadMutation.mutateAsync({
+        file: image[0]?.file,
+        assetType: "image",
+        entityType: "collection",
+      });
+      imageId = id
+
+    }
+    if (mode === 'Create') {
+      await createCollectionMutation.mutateAsync({
+        ...data,
+        imageId,
+      });
+      return
+    }
+    if (mode === 'Edit' && row) {
+
+      await editCollectionMutation.mutateAsync({
+        ...data,
+        imageId,
+        id: row.id
+      });
+      return
+    }
+
+  });
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetTrigger asChild>{children}</SheetTrigger>
+      {children}
       <Form {...form}>
         <SheetContent className="flex">
           <form onSubmit={onSubmit} className="flex flex-1 flex-col gap-5">
             <SheetHeader>
-              <SheetTitle>Create Collection</SheetTitle>
+              <SheetTitle>{mode} Collection</SheetTitle>
             </SheetHeader>
             <div className="flex gap-4">
               <FormField
@@ -328,7 +371,7 @@ const CreateUpdateCollectionSheet = ({
                 className="flex-1"
                 loading={form.formState.isSubmitting}
               >
-                Create
+                {mode}
               </LoadingButton>
             </SheetFooter>
           </form>
@@ -337,3 +380,59 @@ const CreateUpdateCollectionSheet = ({
     </Sheet>
   );
 };
+
+const ActionsDropdown = ({ row }: { row: Row<GetCollectionActionResponse["collections"][0]> }) => {
+  const queryClient = useQueryClient()
+
+  const deleteCollection = useMutation({
+    mutationKey: ['deleteCollection'],
+    mutationFn: deleteCollectionByIdAction,
+    onSuccess: () => {
+      queryClient.refetchQueries({
+        queryKey: ["getCollectionAction"],
+      })
+    },
+    onError: () => { console.log("deleteCollectionError"); errorHandler() },
+  })
+
+  return <CreateUpdateCollectionSheet mode="Edit" row={row.original}>
+    <DropdownMenu>
+      <DropdownMenuTrigger className="p-2">
+        <LucideIcon name="EllipsisVertical" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+
+        <SheetTrigger asChild>
+          <DropdownMenuItem>
+            <LucideIcon name="PenLine" />
+            <span>Edit</span>
+          </DropdownMenuItem>
+        </SheetTrigger>
+        <DropdownMenuItem>
+          <LucideIcon name="SquarePlus" />
+          <span>Add Products</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <LucideIcon name="Eye" />
+          <span>View Products</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem>
+          <LucideIcon name="Info" />
+          <span>Details</span>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          destructive
+          onClick={() => confirmBeforeAction(
+            () => deleteCollection.mutateAsync({ id: row.original.id }),
+          )}
+        >
+
+          <LucideIcon name="Trash" />
+          <span>Delete</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  </CreateUpdateCollectionSheet>
+
+}
