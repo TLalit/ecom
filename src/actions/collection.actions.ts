@@ -175,12 +175,17 @@ export const createCollectionAction = async (
 };
 
 export const deleteCollectionByIdAction = async ({ id }: { id: string }) => {
-  // await new Promise((res, rej) => { setTimeout(() => rej(new Error('please work')), 2000) })
+
+  const session = await auth();
+
+  if (!session?.user?.roles.includes("admin")) {
+    throw new Error("Unauthorized");
+  }
   return await db.delete(collection).where(eq(collection.id, id));
 }
 export const editCollectionAction = async (
 
-  payload: z.infer<typeof CreateCollectionSchema> & { id: string },
+  payload: z.infer<typeof EdditCollectionSchema>,
 
 ) => {
 
