@@ -2,6 +2,7 @@
 import { auth } from "@/auth";
 import { currency, db } from "@/db";
 import {
+  AvailabelCurrencySchema,
   AvailableCurrencyActionsSchema,
   DefaultCurrencySchema,
 } from "@/validators/currency.validators";
@@ -10,16 +11,13 @@ import { z } from "zod";
 import { getPaginationValues } from "./action.helpers";
 import { PaginationParams } from "./action.types";
 
-export interface GetCurrencyAction extends PaginationParams {}
+export interface GetCurrencyAction extends PaginationParams { }
 
 export type GetCurrencyActionResponse = Awaited<
   ReturnType<typeof getCurrencyAction>
 >;
 
-export const getCurrencyAction = async ({
-  ...paginationParams
-}: GetCurrencyAction = {}) => {
-  const { page, limit, offset } = getPaginationValues(paginationParams);
+export const getCurrencyAction = async () => {
   const session = await auth();
   if (!session?.user?.roles.includes("admin")) {
     throw new Error("Unauthorized");
@@ -36,8 +34,6 @@ export const getCurrencyAction = async ({
       isAvailable: currency.isAvailable,
     })
     .from(currency)
-    .limit(limit)
-    .offset(offset);
 
   const getTotalCount = db
     .select({
@@ -51,16 +47,16 @@ export const getCurrencyAction = async ({
     getTotalCount,
   ]);
 
+
+
   return {
     currencies,
-    page,
-    limit,
     total: totalCount,
   };
 };
 
 export const createAvailableCurrencyAction = async (
-  payload: z.infer<typeof AvailableCurrencyActionsSchema>,
+  payload: z.infer<typeof AvailabelCurrencySchema>,
 ) => {
   const session = await auth();
 
@@ -69,24 +65,28 @@ export const createAvailableCurrencyAction = async (
   }
 
   const { success, data, error } =
-    AvailableCurrencyActionsSchema.safeParse(payload);
+    AvailabelCurrencySchema.safeParse(payload);
   if (!success) {
     throw new Error("Invalid Request", {
       cause: error.errors,
     });
   }
 
-  const { id } = await db
-    .update(currency)
-    .set({
-      isAvailable: true,
-      updatedAt: new Date(),
-    })
-    .where(inArray(currency.id, data.currencyIds))
-    .returning()
-    .then((res) => res[0]);
+  const availableCurrencyMap = data.availableCurrencies.map((c) => {
 
-  return id;
+    const updateCurrency = db.update(currency).set({
+      isAvailable: true,
+      value: c.value * 100
+    })
+
+    return updateCurrency
+  })
+
+  const availableCurrencies = await Promise.all(availableCurrencyMap)
+
+  return {
+    availableCurrencies,
+  };
 };
 
 export const deleteAvailableCurrencyAction = async (
@@ -112,6 +112,7 @@ export const deleteAvailableCurrencyAction = async (
     .set({
       isAvailable: false,
       updatedAt: new Date(),
+      updatedBy: session.user.name
     })
     .where(inArray(currency.id, data.currencyIds))
     .returning()

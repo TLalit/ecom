@@ -62,46 +62,46 @@ import { File } from "buffer";
 const columns: DataTableProps<
   GetCollectionActionResponse["collections"][0]
 >["columns"] = [
-  { header: "Title", accessorKey: "title", enableSorting: true },
-  {
-    header: "Slug",
-    accessorKey: "slug",
-    enableSorting: true,
-  },
-  {
-    header: "Status",
-    accessorKey: "status",
-  },
-  {
-    header: "Visibility",
-    accessorKey: "visibility",
-  },
-  {
-    header: "Image",
-    accessorKey: "image",
-    cell: ({ row }) => {
-      return row.original.image ? (
-        <ImageList
-          images={[
-            {
-              src: row.original.image.thumbnailUrl,
-              width: 40,
-              height: 40,
-              className: "aspect-square",
-            },
-          ]}
-        />
-      ) : null;
+    { header: "Title", accessorKey: "title", enableSorting: true },
+    {
+      header: "Slug",
+      accessorKey: "slug",
+      enableSorting: true,
     },
-  },
-  {
-    header: "Actions",
-    accessorKey: "id",
-    cell: ({ row }) => {
-      return <ActionsDropdown row={row} />;
+    {
+      header: "Status",
+      accessorKey: "status",
     },
-  },
-];
+    {
+      header: "Visibility",
+      accessorKey: "visibility",
+    },
+    {
+      header: "Image",
+      accessorKey: "image",
+      cell: ({ row }) => {
+        return row.original.image ? (
+          <ImageList
+            images={[
+              {
+                src: row.original.image.thumbnailUrl,
+                width: 40,
+                height: 40,
+                className: "aspect-square",
+              },
+            ]}
+          />
+        ) : null;
+      },
+    },
+    {
+      header: "Actions",
+      accessorKey: "id",
+      cell: ({ row }) => {
+        return <ActionsDropdown row={row} />;
+      },
+    },
+  ];
 export default function Page() {
   const { data, isFetching } = useQuery({
     queryKey: ["getCollectionAction"],

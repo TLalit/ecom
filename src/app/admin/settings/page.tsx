@@ -12,11 +12,7 @@ export default function Settings() {
         <p>Manage the general settings for your store</p>
       </section>
       <section>
-        <CreateUpdateCollectionSheet mode="Create">
-          <SheetTrigger asChild>
-            <Card className="mx-auto max-w-sm shadow-2xl">Currencies</Card>
-          </SheetTrigger>
-        </CreateUpdateCollectionSheet>
+        <Card className="mx-auto max-w-sm shadow-2xl">Currencies</Card>
       </section>
     </main>
   );

@@ -41,6 +41,20 @@ CREATE TABLE IF NOT EXISTS "collection" (
 	CONSTRAINT "collection_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "currency" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" text NOT NULL,
+	"symbol" text NOT NULL,
+	"code" text NOT NULL,
+	"value" numeric NOT NULL,
+	"is_default" boolean NOT NULL,
+	"is_available" boolean NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now(),
+	CONSTRAINT "currency_name_unique" UNIQUE("name"),
+	CONSTRAINT "currency_symbol_unique" UNIQUE("symbol")
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_role" (
 	"user_id" uuid NOT NULL,
 	"role" text NOT NULL
