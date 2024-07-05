@@ -10,7 +10,9 @@ export const CreateCollectionSchema = z.object({
   visibility: z.enum([VisibilityEnum.PUBLIC, VisibilityEnum.PRIVATE]),
 });
 
-export const EdditCollectionSchema = CreateCollectionSchema.merge(z.object({
-  id: z.string()
-}))
+export const EdditCollectionSchema = CreateCollectionSchema.merge(
+  z.object({
+    id: z.string(),
+  }),
+);
 export type CreateCollectionBody = z.infer<typeof CreateCollectionSchema>;

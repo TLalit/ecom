@@ -8,4 +8,4 @@ export * from "./uploads";
 export * from "./user";
 export * from "./users.relations";
 export * from "./verificationTokens";
-export * from "./currency"
+export * from "./currency";

@@ -31,7 +31,7 @@ const initialState = {
   confirmText: "Continue",
   title: "Are you absolutely sure?",
   description: `This action cannot be undone.`,
-  onConfirm: async () => { },
+  onConfirm: async () => {},
 };
 const useConfirmationStore = create<IConfirmationDialog>(
   (set, get) => initialState,
@@ -59,14 +59,17 @@ export const ConfirmationDialog = () => {
   } = useConfirmationStore();
 
   const confirmMutation = useMutation({
-    mutationKey: ['confirmMutation'],
+    mutationKey: ["confirmMutation"],
     mutationFn: onConfirm,
     onSuccess: () => {
       console.log("success");
-      onOpenChange(false)
+      onOpenChange(false);
     },
-    onError: (error) => { onOpenChange(false); errorHandler(); }
-  })
+    onError: (error) => {
+      onOpenChange(false);
+      errorHandler();
+    },
+  });
 
   const onOpenChange = (isOpen: boolean) => {
     if (isOpen) {
@@ -78,11 +81,10 @@ export const ConfirmationDialog = () => {
     useConfirmationStore.setState(initialState);
   };
 
-
   if (!isOpen) return null;
 
   return (
-    <AlertDialog open={isOpen} >
+    <AlertDialog open={isOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
@@ -91,7 +93,9 @@ export const ConfirmationDialog = () => {
           )}
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => onOpenChange(false)}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={() => onOpenChange(false)}>
+            Cancel
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={() => confirmMutation.mutate()}
             className={cn(
@@ -101,7 +105,14 @@ export const ConfirmationDialog = () => {
             )}
           >
             {confirmIcon && <LucideIcon name={confirmIcon} />}
-            {confirmMutation.isPending ? <LucideIcon name="LoaderCircle" className="absolute animate-spin" /> : <span>{confirmText}</span>}
+            {confirmMutation.isPending ? (
+              <LucideIcon
+                name="LoaderCircle"
+                className="absolute animate-spin"
+              />
+            ) : (
+              <span>{confirmText}</span>
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -3,8 +3,8 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export interface TextareaProps
-  extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'value'> {
-  value: React.TextareaHTMLAttributes<HTMLTextAreaElement>['value'] | null
+  extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "value"> {
+  value: React.TextareaHTMLAttributes<HTMLTextAreaElement>["value"] | null;
 }
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
@@ -16,7 +16,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           className,
         )}
         ref={ref}
-        value={value ?? ''}
+        value={value ?? ""}
         {...props}
       />
     );

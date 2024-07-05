@@ -49,10 +49,7 @@ import { collectionStatusOptions, visibilityStatusOptions } from "@/constants";
 import { useFileUploadMutation } from "@/hooks/apiHooks";
 import { errorHandler } from "@/lib/query.helper";
 import { generateSlug } from "@/lib/string.helper";
-import {
-  StatusEnum,
-  VisibilityEnum,
-} from "@/types/collection.api.types";
+import { StatusEnum, VisibilityEnum } from "@/types/collection.api.types";
 import { CreateCollectionSchema } from "@/validators/collection.validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -65,48 +62,46 @@ import { File } from "buffer";
 const columns: DataTableProps<
   GetCollectionActionResponse["collections"][0]
 >["columns"] = [
-    { header: "Title", accessorKey: "title", enableSorting: true },
-    {
-      header: "Slug",
-      accessorKey: "slug",
-      enableSorting: true,
+  { header: "Title", accessorKey: "title", enableSorting: true },
+  {
+    header: "Slug",
+    accessorKey: "slug",
+    enableSorting: true,
+  },
+  {
+    header: "Status",
+    accessorKey: "status",
+  },
+  {
+    header: "Visibility",
+    accessorKey: "visibility",
+  },
+  {
+    header: "Image",
+    accessorKey: "image",
+    cell: ({ row }) => {
+      return row.original.image ? (
+        <ImageList
+          images={[
+            {
+              src: row.original.image.thumbnailUrl,
+              width: 40,
+              height: 40,
+              className: "aspect-square",
+            },
+          ]}
+        />
+      ) : null;
     },
-    {
-      header: "Status",
-      accessorKey: "status",
+  },
+  {
+    header: "Actions",
+    accessorKey: "id",
+    cell: ({ row }) => {
+      return <ActionsDropdown row={row} />;
     },
-    {
-      header: "Visibility",
-      accessorKey: "visibility",
-    },
-    {
-      header: "Image",
-      accessorKey: "image",
-      cell: ({ row }) => {
-        return row.original.image ? (
-          <ImageList
-            images={[
-              {
-                src: row.original.image.thumbnailUrl,
-                width: 40,
-                height: 40,
-                className: "aspect-square",
-              },
-            ]}
-          />
-        ) : null;
-      },
-    },
-    {
-      header: "Actions",
-      accessorKey: "id",
-      cell: ({ row }) => {
-        return (
-          <ActionsDropdown row={row} />
-        );
-      },
-    }
-  ];
+  },
+];
 export default function Page() {
   const { data, isFetching } = useQuery({
     queryKey: ["getCollectionAction"],
@@ -139,19 +134,24 @@ const createCollectionClientSchema = CreateCollectionSchema.omit({
 }).merge(
   z.object({
     image: z
-      .array(z.object({ url: z.string().url(), file: z.any(), id: z.string().nullish() }))
+      .array(
+        z.object({
+          url: z.string().url(),
+          file: z.any(),
+          id: z.string().nullish(),
+        }),
+      )
       .min(1, "Please upload at least one image"),
   }),
 );
 
-
 export const CreateUpdateCollectionSheet = ({
   children,
   mode,
-  row
+  row,
 }: PropsWithChildren<{
   mode: "Create" | "Edit";
-  row?: GetCollectionActionResponse["collections"][0]
+  row?: GetCollectionActionResponse["collections"][0];
 }>) => {
   const queryClient = useQueryClient();
   const [open, onOpenChange] = useState(false);
@@ -162,7 +162,7 @@ export const CreateUpdateCollectionSheet = ({
       slug: row?.slug,
       status: row?.status ?? StatusEnum.ACTIVE,
       title: row?.visibility ?? VisibilityEnum.PUBLIC,
-      visibility: row?.visibility
+      visibility: row?.visibility,
     },
     resolver: zodResolver(createCollectionClientSchema),
   });
@@ -192,33 +192,30 @@ export const CreateUpdateCollectionSheet = ({
     },
   });
   const onSubmit = form.handleSubmit(async ({ image, ...data }) => {
-    let imageId = image[0].id ?? ''
+    let imageId = image[0].id ?? "";
     if (image[0]?.file) {
       const { id } = await fileUploadMutation.mutateAsync({
         file: image[0]?.file,
         assetType: "image",
         entityType: "collection",
       });
-      imageId = id
-
+      imageId = id;
     }
-    if (mode === 'Create') {
+    if (mode === "Create") {
       await createCollectionMutation.mutateAsync({
         ...data,
         imageId,
       });
-      return
+      return;
     }
-    if (mode === 'Edit' && row) {
-
+    if (mode === "Edit" && row) {
       await editCollectionMutation.mutateAsync({
         ...data,
         imageId,
-        id: row.id
+        id: row.id,
       });
-      return
+      return;
     }
-
   });
 
   return (
@@ -381,58 +378,66 @@ export const CreateUpdateCollectionSheet = ({
   );
 };
 
-const ActionsDropdown = ({ row }: { row: Row<GetCollectionActionResponse["collections"][0]> }) => {
-  const queryClient = useQueryClient()
+const ActionsDropdown = ({
+  row,
+}: {
+  row: Row<GetCollectionActionResponse["collections"][0]>;
+}) => {
+  const queryClient = useQueryClient();
 
   const deleteCollection = useMutation({
-    mutationKey: ['deleteCollection'],
+    mutationKey: ["deleteCollection"],
     mutationFn: deleteCollectionByIdAction,
     onSuccess: () => {
       queryClient.refetchQueries({
         queryKey: ["getCollectionAction"],
-      })
+      });
     },
-    onError: () => { console.log("deleteCollectionError"); errorHandler() },
-  })
+    onError: () => {
+      console.log("deleteCollectionError");
+      errorHandler();
+    },
+  });
 
-  return <CreateUpdateCollectionSheet mode="Edit" row={row.original}>
-    <DropdownMenu>
-      <DropdownMenuTrigger className="p-2">
-        <LucideIcon name="EllipsisVertical" />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-
-        <SheetTrigger asChild>
+  return (
+    <CreateUpdateCollectionSheet mode="Edit" row={row.original}>
+      <DropdownMenu>
+        <DropdownMenuTrigger className="p-2">
+          <LucideIcon name="EllipsisVertical" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <SheetTrigger asChild>
+            <DropdownMenuItem>
+              <LucideIcon name="PenLine" />
+              <span>Edit</span>
+            </DropdownMenuItem>
+          </SheetTrigger>
           <DropdownMenuItem>
-            <LucideIcon name="PenLine" />
-            <span>Edit</span>
+            <LucideIcon name="SquarePlus" />
+            <span>Add Products</span>
           </DropdownMenuItem>
-        </SheetTrigger>
-        <DropdownMenuItem>
-          <LucideIcon name="SquarePlus" />
-          <span>Add Products</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <LucideIcon name="Eye" />
-          <span>View Products</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <LucideIcon name="Info" />
-          <span>Details</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          destructive
-          onClick={() => confirmBeforeAction(
-            () => deleteCollection.mutateAsync({ id: row.original.id }),
-          )}
-        >
-
-          <LucideIcon name="Trash" />
-          <span>Delete</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  </CreateUpdateCollectionSheet>
-
-}
+          <DropdownMenuItem>
+            <LucideIcon name="Eye" />
+            <span>View Products</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <LucideIcon name="Info" />
+            <span>Details</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            destructive
+            onClick={() =>
+              confirmBeforeAction(() =>
+                deleteCollection.mutateAsync({ id: row.original.id }),
+              )
+            }
+          >
+            <LucideIcon name="Trash" />
+            <span>Delete</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </CreateUpdateCollectionSheet>
+  );
+};
