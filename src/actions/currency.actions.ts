@@ -12,7 +12,7 @@ export type GetCurrencyActionResponse = Awaited<ReturnType<typeof getCurrencyAct
 
 
 
-export const getCurrencyAction = async ({ ...paginationParams }: GetCurrencyAction) => {
+export const getCurrencyAction = async ({ ...paginationParams }: GetCurrencyAction = {}) => {
     const { page, limit, offset } = getPaginationValues(paginationParams);
     const session = await auth();
     if (!session?.user?.roles.includes("admin")) {
