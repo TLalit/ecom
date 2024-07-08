@@ -3,12 +3,12 @@ import { auth } from "@/auth";
 import { currency, db } from "@/db";
 import {
   AvailabelCurrencySchema,
-  AvailableCurrencyActionsSchema,
+  // AvailableCurrencyActionsSchema,
   DefaultCurrencySchema,
+  EditCurrencySchema,
 } from "@/validators/currency.validators";
 import { count, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
-import { getPaginationValues } from "./action.helpers";
 import { PaginationParams } from "./action.types";
 
 export interface GetCurrencyAction extends PaginationParams { }
@@ -48,7 +48,6 @@ export const getCurrencyAction = async () => {
   ]);
 
 
-
   return {
     currencies,
     total: totalCount,
@@ -58,26 +57,28 @@ export const getCurrencyAction = async () => {
 export const createAvailableCurrencyAction = async (
   payload: z.infer<typeof AvailabelCurrencySchema>,
 ) => {
+
   const session = await auth();
 
   if (!session?.user?.roles.includes("admin")) {
     throw new Error("Unauthorized");
   }
-
   const { success, data, error } =
     AvailabelCurrencySchema.safeParse(payload);
+
   if (!success) {
     throw new Error("Invalid Request", {
       cause: error.errors,
     });
   }
 
-  const availableCurrencyMap = data.availableCurrencies.map((c) => {
+  const availableCurrencyMap = data.availableCurrencies.map((curr) => {
 
     const updateCurrency = db.update(currency).set({
       isAvailable: true,
-      value: c.value * 100
-    })
+      value: curr.value
+    }).where(eq(currency.id, curr.id)).returning()
+      .then((res) => res[0].id);
 
     return updateCurrency
   })
@@ -90,8 +91,9 @@ export const createAvailableCurrencyAction = async (
 };
 
 export const deleteAvailableCurrencyAction = async (
-  payload: z.infer<typeof AvailableCurrencyActionsSchema>,
+  payload: z.infer<typeof DefaultCurrencySchema>,
 ) => {
+
   const session = await auth();
 
   if (!session?.user?.roles.includes("admin")) {
@@ -99,7 +101,7 @@ export const deleteAvailableCurrencyAction = async (
   }
 
   const { success, data, error } =
-    AvailableCurrencyActionsSchema.safeParse(payload);
+    DefaultCurrencySchema.safeParse(payload);
 
   if (!success) {
     throw new Error("Invalid Request", {
@@ -114,7 +116,7 @@ export const deleteAvailableCurrencyAction = async (
       updatedAt: new Date(),
       updatedBy: session.user.name
     })
-    .where(inArray(currency.id, data.currencyIds))
+    .where(eq(currency.id, data.currencyId))
     .returning()
     .then((res) => res[0]);
 
@@ -157,4 +159,37 @@ export const updateDefaultCurrencyAction = async (
         .where(eq(currency.id, data.currencyId));
     })
     .then((res) => console.log(res));
+};
+
+export const editAvailableCurrencyActions = async (
+  payload: z.infer<typeof EditCurrencySchema>,
+) => {
+
+  const session = await auth();
+
+  if (!session?.user?.roles.includes("admin")) {
+    throw new Error("Unauthorized");
+  }
+
+  const { success, data, error } =
+    EditCurrencySchema.safeParse(payload);
+
+  if (!success) {
+    throw new Error("Invalid Request", {
+      cause: error.errors,
+    });
+  }
+
+  const { id } = await db
+    .update(currency)
+    .set({
+      value: data.value,
+      updatedAt: new Date(),
+      updatedBy: session.user.name
+    })
+    .where(eq(currency.id, data.currencyId))
+    .returning()
+    .then((res) => res[0]);
+
+  return id;
 };

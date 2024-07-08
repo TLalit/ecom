@@ -19,32 +19,32 @@ const sidebarItems: {
   icon: IconProps["name"];
   href: string;
 }[] = [
-  {
-    name: "Dashboard",
-    icon: "Home",
-    href: "/admin",
-  },
-  {
-    name: "Collection",
-    icon: "LayoutDashboard",
-    href: "/admin/collection",
-  },
-  {
-    name: "Orders",
-    icon: "ShoppingCart",
-    href: "/admin/orders",
-  },
-  {
-    name: "Products",
-    icon: "Package",
-    href: "/admin/products",
-  },
-  {
-    name: "Customers",
-    icon: "Users",
-    href: "/admin/customers",
-  },
-];
+    {
+      name: "Dashboard",
+      icon: "Home",
+      href: "/admin",
+    },
+    {
+      name: "Collection",
+      icon: "LayoutDashboard",
+      href: "/admin/collection",
+    },
+    {
+      name: "Orders",
+      icon: "ShoppingCart",
+      href: "/admin/orders",
+    },
+    {
+      name: "Products",
+      icon: "Package",
+      href: "/admin/products",
+    },
+    {
+      name: "Customers",
+      icon: "Users",
+      href: "/admin/customers",
+    },
+  ];
 export default async function AdminRootLayout({ children }: PropsWithChildren) {
   const session = await auth();
   if (!session) {
@@ -109,7 +109,7 @@ export default async function AdminRootLayout({ children }: PropsWithChildren) {
                     asChild
                     className="flex size-10 items-center justify-center"
                   >
-                    <Link href="#">
+                    <Link href="/admin/settings/currencies">
                       <LucideIcon name="Settings" />
                       <span className="sr-only">Settings</span>
                     </Link>
