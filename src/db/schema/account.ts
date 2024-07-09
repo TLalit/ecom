@@ -2,7 +2,7 @@ import { integer, pgTable, primaryKey, text, uuid } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "next-auth/adapters";
 import { userTable } from "./user";
 
-export const accounts = pgTable(
+export const accountTable = pgTable(
   "account",
   {
     userId: uuid("user_id")

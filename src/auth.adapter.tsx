@@ -11,7 +11,7 @@ import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
 import { DefaultSession } from "next-auth";
 import {
   TSelectUser,
-  accounts,
+  accountTable,
   authenticatorTable,
   sessionTable,
   userRoleTable,
@@ -153,22 +153,22 @@ export function authAdapter(client: PgDatabase<QueryResultHKT, any>): Adapter {
         .then((res) => res[0]);
     },
     async linkAccount(data: AdapterAccount) {
-      await client.insert(accounts).values(data);
+      await client.insert(accountTable).values(data);
     },
     async getUserByAccount(
       account: Pick<AdapterAccount, "provider" | "providerAccountId">,
     ) {
       const result = await client
         .select({
-          account: accounts,
+          account: accountTable,
           user: userTable,
         })
-        .from(accounts)
-        .innerJoin(userTable, eq(accounts.userId, userTable.id))
+        .from(accountTable)
+        .innerJoin(userTable, eq(accountTable.userId, userTable.id))
         .where(
           and(
-            eq(accounts.provider, account.provider),
-            eq(accounts.providerAccountId, account.providerAccountId),
+            eq(accountTable.provider, account.provider),
+            eq(accountTable.providerAccountId, account.providerAccountId),
           ),
         )
         .then((res) => res[0]);
@@ -206,22 +206,22 @@ export function authAdapter(client: PgDatabase<QueryResultHKT, any>): Adapter {
       params: Pick<AdapterAccount, "provider" | "providerAccountId">,
     ) {
       await client
-        .delete(accounts)
+        .delete(accountTable)
         .where(
           and(
-            eq(accounts.provider, params.provider),
-            eq(accounts.providerAccountId, params.providerAccountId),
+            eq(accountTable.provider, params.provider),
+            eq(accountTable.providerAccountId, params.providerAccountId),
           ),
         );
     },
     async getAccount(providerAccountId: string, provider: string) {
       return client
         .select()
-        .from(accounts)
+        .from(accountTable)
         .where(
           and(
-            eq(accounts.provider, provider),
-            eq(accounts.providerAccountId, providerAccountId),
+            eq(accountTable.provider, provider),
+            eq(accountTable.providerAccountId, providerAccountId),
           ),
         )
         .then((res) => res[0] ?? null) as Promise<AdapterAccount | null>;

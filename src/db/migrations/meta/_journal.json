@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1720185260076,
-      "tag": "0000_sharp_famine",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1720185984983,
-      "tag": "0001_petite_gwen_stacy",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1720186508181,
-      "tag": "0002_careful_the_twelve",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1720345407263,
-      "tag": "0003_talented_maestro",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1720442751632,
-      "tag": "0004_typical_titanium_man",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1720442816162,
-      "tag": "0005_mixed_hardball",
+      "when": 1720514978555,
+      "tag": "0000_dear_steel_serpent",
       "breakpoints": true
     }
   ]

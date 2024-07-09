@@ -1,8 +1,13 @@
-import { isNull } from "drizzle-orm";
-import { boolean, integer, numeric, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { SQLiteInteger } from "drizzle-orm/sqlite-core";
+import {
+  boolean,
+  integer,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 
-export const currency = pgTable("currency", {
+export const currencyTable = pgTable("currency", {
   id: uuid("id").defaultRandom().notNull().primaryKey(),
   name: text("name").notNull().unique(),
   symbol: text("symbol").notNull().unique(),

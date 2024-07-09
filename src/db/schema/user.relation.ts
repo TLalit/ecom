@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
-import { userRoleTable } from "./roles";
 import { userTable } from "./user";
+import { userRoleTable } from "./userRole";
 
 export const UserRelations = relations(userTable, ({ many }) => ({
   roles: many(userRoleTable),
