@@ -1,32 +1,32 @@
 "use client";
 import { createAvailableCurrencyAction, deleteAvailableCurrencyAction, editAvailableCurrencyActions, getCurrencyAction, GetCurrencyActionResponse, updateDefaultCurrencyAction } from "@/actions/currency.actions";
-import { QueryClient, useMutation, UseMutationResult, useQuery, useQueryClient } from "@tanstack/react-query";
+import { DataTable, DataTableProps } from "@/components/global/data-table";
+import { LucideIcon } from "@/components/icons/icon";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DataTable, DataTableProps } from "@/components/global/data-table";
-import { LucideIcon } from "@/components/icons/icon";
-import { Row } from "@tanstack/react-table";
-import { errorHandler } from "@/lib/query.helper";
-import { PropsWithChildren, useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { ChevronsUpDown } from "lucide-react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Checkbox } from "@/components/ui/checkbox";
-import { FieldValues, useController, useForm, useFormContext, UseFormSetValue } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { LoadingButton } from "@/components/ui/loading-button";
-import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { errorHandler } from "@/lib/query.helper";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, UseMutationResult, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Row } from "@tanstack/react-table";
+import { ChevronsUpDown } from "lucide-react";
+import { PropsWithChildren, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 export default function Page() {
 
@@ -284,6 +284,7 @@ const AddEditValueDialog = ({ children, id, mode, handleEditSubmit, handleAddSub
   }, unknown>,
   handleAddSubmit?: (id: string, value: number) => void
 }>) => {
+  const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof AddEditValueDialogSchema>>({
     defaultValues: { currencyValue: defaultValue ?? 1 },
@@ -295,9 +296,16 @@ const AddEditValueDialog = ({ children, id, mode, handleEditSubmit, handleAddSub
     if (mode === 'Edit') handleEditSubmit?.mutate({ currencyId, value: formatCurrency(Number(form.watch('currencyValue'))) })
     if (mode === 'Add') handleAddSubmit?.(currencyId, form.watch('currencyValue'))
   }
-
+  const handleOpenChange = () => {
+    setOpen(prev => {
+      if (prev) {
+        form.reset()
+      }
+      return !prev
+    })
+  }
   return (
-    <Dialog >
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       {children}
       <Form {...form}>
         <DialogContent className="sm:max-w-[425px]">
