@@ -105,8 +105,6 @@ const AddCurrencySheet = ({ children, currencies }: PropsWithChildren<{ currenci
   });
   const form = useForm();
   const onSubmit = form.handleSubmit(async (data) => {
-    console.log({ data });
-
     const definedCurr: [string, number][] = Object.entries(data).filter(curr => curr[1]);
     const availableCurrencies = definedCurr.reduce((acc, curr) => {
       const tempCurr = {
@@ -123,7 +121,7 @@ const AddCurrencySheet = ({ children, currencies }: PropsWithChildren<{ currenci
   const handleForm = (id: string, value: number) => {
     form.setValue(id, value);
   }
-  return <Sheet open={open} onOpenChange={() => { form.reset(); onOpenChange(prev => !prev) }}>
+  return <Sheet open={open} onOpenChange={(e) => { console.log(e); form.reset(); onOpenChange(prev => !prev) }}>
     {children}
     <Form {...form}>
       <SheetContent >
@@ -134,7 +132,7 @@ const AddCurrencySheet = ({ children, currencies }: PropsWithChildren<{ currenci
           <div className="flex flex-col gap-4 mt-2">
             {currencies.map((curr, idx) => {
               return <div key={idx} className="flex justify-start gap-2 items-center ">
-                <AddEditValueDialog id={curr.id} mode={"Add"} handleAddSubmit={handleForm}>
+                <AddEditValueDialog currencyId={curr.id} mode={"Add"} handleAddSubmit={handleForm}>
                   <DialogTrigger asChild>
                     <Checkbox
                       checked={!!form.watch(curr.id)}
@@ -169,23 +167,24 @@ const AddCurrencySheet = ({ children, currencies }: PropsWithChildren<{ currenci
 
 const availableCurrencyColumns: DataTableProps<GetCurrencyActionResponse['currencies'][0]>["columns"] = [
   {
-    header: 'Code',
-    accessorKey: "code",
+    header: 'Default Value',
+    accessorKey: "value",
     cell: ({ row }) => {
       return <div className="">
-        {row.original.code}
+        {row.original.symbol}1 USD
       </div>
     }
   },
   {
     header: 'Current Value',
-    accessorKey: "value",
+    accessorKey: "code",
     cell: ({ row }) => {
       return <div className="">
-        {row.original.symbol}{formatCurrency(row.original.value, 'client')}
+        {`${row.original.symbol}${formatCurrency(row.original.value, 'client')} ${row.original.code}`}
       </div>
     }
   },
+
   {
     header: 'Name',
     accessorKey: "name",
@@ -234,7 +233,7 @@ const ActionsDropdown = ({ row }: { row: Row<GetCurrencyActionResponse['currenci
     },
   });
   return (
-    <AddEditValueDialog id={row.original.id} mode='Edit' defaultValue={formatCurrency(row.original.value, 'client')} handleEditSubmit={editAvailableCurrencies}>
+    <AddEditValueDialog currencyId={row.original.id} mode='Edit' defaultValue={formatCurrency(row.original.value, 'client')} handleEditSubmit={editAvailableCurrencies}>
       <DropdownMenu>
         <DropdownMenuTrigger className="p-2">
           <LucideIcon name="EllipsisVertical" />
@@ -274,8 +273,8 @@ const AddEditValueDialogSchema = z.object({
   })
 });
 
-const AddEditValueDialog = ({ children, id, mode, handleEditSubmit, handleAddSubmit, defaultValue }: PropsWithChildren<{
-  id: string,
+const AddEditValueDialog = ({ children, currencyId, mode, handleEditSubmit, handleAddSubmit, defaultValue }: PropsWithChildren<{
+  currencyId: string,
   mode: 'Edit' | 'Add',
   defaultValue?: number,
   handleEditSubmit?: UseMutationResult<string, Error, {
@@ -292,10 +291,12 @@ const AddEditValueDialog = ({ children, id, mode, handleEditSubmit, handleAddSub
     mode: 'all'
   });
 
-  const onSubmit = (currencyId: string) => {
-    if (mode === 'Edit') handleEditSubmit?.mutate({ currencyId, value: formatCurrency(Number(form.watch('currencyValue'))) })
-    if (mode === 'Add') handleAddSubmit?.(currencyId, form.watch('currencyValue'))
-  }
+  const onSubmit = form.handleSubmit((data) => {
+    console.log(data)
+    if (mode === 'Edit') handleEditSubmit?.mutate({ currencyId, value: formatCurrency(Number(data.currencyValue)) })
+    if (mode === 'Add') handleAddSubmit?.(currencyId, data.currencyValue)
+    handleOpenChange()
+  })
   const handleOpenChange = () => {
     setOpen(prev => {
       if (prev) {
@@ -309,7 +310,10 @@ const AddEditValueDialog = ({ children, id, mode, handleEditSubmit, handleAddSub
       {children}
       <Form {...form}>
         <DialogContent className="sm:max-w-[425px]">
-          <form onSubmit={() => onSubmit(id)} className="flex flex-1 flex-col gap-5">
+          <form onSubmit={(e) => {
+            e.stopPropagation()
+            onSubmit(e)
+          }} className="flex flex-1 flex-col gap-5">
             <DialogHeader>
               <DialogTitle>Enter default value</DialogTitle>
               <DialogDescription>
