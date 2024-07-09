@@ -109,7 +109,7 @@ export default async function AdminRootLayout({ children }: PropsWithChildren) {
                     asChild
                     className="flex size-10 items-center justify-center"
                   >
-                    <Link href="/admin/settings/currencies">
+                    <Link href="/admin/settings">
                       <LucideIcon name="Settings" />
                       <span className="sr-only">Settings</span>
                     </Link>
