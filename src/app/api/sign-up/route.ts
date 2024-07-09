@@ -1,4 +1,4 @@
-import { accounts, db, userTable } from "@/db";
+import { accountTable, db, userTable } from "@/db";
 import { getFirst } from "@/lib/array.helpers";
 import { saltAndHashPassword } from "@/lib/password";
 import { respondError, respondJson } from "@/lib/server.helpers";
@@ -30,7 +30,7 @@ export const POST = async (req: Request) => {
       db
         .select()
         .from(userTable)
-        .leftJoin(accounts, eq(userTable.id, accounts.userId))
+        .leftJoin(accountTable, eq(userTable.id, accountTable.userId))
         .where(
           and(eq(userTable.email, data.email), isNull(userTable.archivedAt)),
         ),

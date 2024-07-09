@@ -13,11 +13,14 @@ import { cn } from "@/lib/utils";
 import { create } from "zustand";
 import { IconProps, LucideIcon } from "../icons/icon";
 import { buttonVariants } from "../ui/button";
+import { useMutation } from "@tanstack/react-query";
+import { errorHandler } from "@/lib/query.helper";
+import { useEffect } from "react";
 
 interface IConfirmationDialog {
   isOpen: boolean;
   severity?: "destructive" | "default";
-  onConfirm: () => Promise<void>;
+  onConfirm: () => Promise<unknown>;
   title: string;
   description?: string;
   confirmText: string;
@@ -54,6 +57,20 @@ export const ConfirmationDialog = () => {
     onConfirm,
     isOpen,
   } = useConfirmationStore();
+
+  const confirmMutation = useMutation({
+    mutationKey: ["confirmMutation"],
+    mutationFn: onConfirm,
+    onSuccess: () => {
+      console.log("success");
+      onOpenChange(false);
+    },
+    onError: (error) => {
+      onOpenChange(false);
+      errorHandler();
+    },
+  });
+
   const onOpenChange = (isOpen: boolean) => {
     if (isOpen) {
       useConfirmationStore.setState({
@@ -63,9 +80,11 @@ export const ConfirmationDialog = () => {
 
     useConfirmationStore.setState(initialState);
   };
+
   if (!isOpen) return null;
+
   return (
-    <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
+    <AlertDialog open={isOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
@@ -74,9 +93,11 @@ export const ConfirmationDialog = () => {
           )}
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={() => onOpenChange(false)}>
+            Cancel
+          </AlertDialogCancel>
           <AlertDialogAction
-            onClick={onConfirm}
+            onClick={() => confirmMutation.mutate()}
             className={cn(
               buttonVariants({
                 variant: severity,
@@ -84,7 +105,14 @@ export const ConfirmationDialog = () => {
             )}
           >
             {confirmIcon && <LucideIcon name={confirmIcon} />}
-            <span>{confirmText}</span>
+            {confirmMutation.isPending ? (
+              <LucideIcon
+                name="LoaderCircle"
+                className="absolute animate-spin"
+              />
+            ) : (
+              <span>{confirmText}</span>
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

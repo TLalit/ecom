@@ -1,16 +1,22 @@
 "use server";
 import { auth } from "@/auth";
-import { collection, db, upload } from "@/db";
+import { collectionTable, db, uploadTable } from "@/db";
 import { getFirst } from "@/lib/array.helpers";
 import { createMainUrl, createThumbnailUrl } from "@/lib/string.helper";
 import { StatusEnum, VisibilityEnum } from "@/types/collection.api.types";
-import { CreateCollectionSchema } from "@/validators/collection.validators";
+import {
+  CreateCollectionSchema,
+  EditCollectionSchema,
+} from "@/validators/collection.validators";
 import { and, count, eq, inArray, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { getPaginationValues } from "./action.helpers";
 import { PaginationParams } from "./action.types";
 
 export interface GetCollectionPayload extends PaginationParams {}
+export type GetCollectionActionResponse = Awaited<
+  ReturnType<typeof getCollectionAction>
+>;
 export const getCollectionAction = async ({
   ...paginationParams
 }: GetCollectionPayload = {}) => {
@@ -26,40 +32,40 @@ export const getCollectionAction = async ({
 
   const getCollection = db
     .select({
-      id: collection.id,
-      title: collection.title,
-      description: collection.description,
+      id: collectionTable.id,
+      title: collectionTable.title,
+      description: collectionTable.description,
       image: {
-        id: upload.id,
-        url: upload.path,
-        thumbnailUrl: upload.path,
+        id: uploadTable.id,
+        url: uploadTable.path,
+        thumbnailUrl: uploadTable.path,
       },
-      slug: collection.slug,
-      status: collection.status,
-      visibility: collection.visibility,
+      slug: collectionTable.slug,
+      status: collectionTable.status,
+      visibility: collectionTable.visibility,
     })
-    .from(collection)
+    .from(collectionTable)
     .where(
       and(
-        isNull(collection.archivedAt),
-        inArray(collection.status, statusArray),
-        inArray(collection.visibility, visibilityArray),
+        isNull(collectionTable.archivedAt),
+        inArray(collectionTable.status, statusArray),
+        inArray(collectionTable.visibility, visibilityArray),
       ),
     )
-    .leftJoin(upload, eq(collection.imageId, upload.id))
+    .leftJoin(uploadTable, eq(collectionTable.imageId, uploadTable.id))
     .limit(limit)
     .offset(offset);
 
   const getTotalCount = db
     .select({
-      total: count(collection.id),
+      total: count(collectionTable.id),
     })
-    .from(collection)
+    .from(collectionTable)
     .where(
       and(
-        isNull(collection.archivedAt),
-        inArray(collection.status, statusArray),
-        inArray(collection.visibility, visibilityArray),
+        isNull(collectionTable.archivedAt),
+        inArray(collectionTable.status, statusArray),
+        inArray(collectionTable.visibility, visibilityArray),
       ),
     )
     .then((res) => res[0].total);
@@ -103,27 +109,27 @@ export const getCollectionBySlugAction = async ({ slug }: { slug: string }) => {
   const collectionBySlug = await getFirst(
     db
       .select({
-        id: collection.id,
-        title: collection.title,
-        description: collection.description,
+        id: collectionTable.id,
+        title: collectionTable.title,
+        description: collectionTable.description,
         image: {
-          id: upload.id,
-          url: upload.path,
+          id: uploadTable.id,
+          url: uploadTable.path,
         },
-        slug: collection.slug,
-        status: collection.status,
-        visibility: collection.visibility,
+        slug: collectionTable.slug,
+        status: collectionTable.status,
+        visibility: collectionTable.visibility,
       })
-      .from(collection)
+      .from(collectionTable)
       .where(
         and(
-          isNull(collection.archivedAt),
-          eq(collection.slug, slug),
-          inArray(collection.visibility, visibilityArray),
-          inArray(collection.status, statusArray),
+          isNull(collectionTable.archivedAt),
+          eq(collectionTable.slug, slug),
+          inArray(collectionTable.visibility, visibilityArray),
+          inArray(collectionTable.status, statusArray),
         ),
       )
-      .leftJoin(upload, eq(collection.imageId, upload.id)),
+      .leftJoin(uploadTable, eq(collectionTable.imageId, uploadTable.id)),
   );
 
   if (!collectionBySlug) {
@@ -162,7 +168,7 @@ export const createCollectionAction = async (
     });
   }
   const { id } = await db
-    .insert(collection)
+    .insert(collectionTable)
     .values({
       ...data,
       updatedBy: session?.user.id,
@@ -173,7 +179,41 @@ export const createCollectionAction = async (
 };
 
 export const deleteCollectionByIdAction = async ({ id }: { id: string }) => {
-  const isDeleted = await db.delete(collection).where(eq(collection.id, id));
+  const session = await auth();
 
-  return true;
+  if (!session?.user?.roles.includes("admin")) {
+    throw new Error("Unauthorized");
+  }
+  return await db
+    .delete(collectionTable)
+    .where(eq(collectionTable.id, id))
+    .returning({ id: collectionTable.id });
+};
+export const editCollectionAction = async (
+  payload: z.infer<typeof EditCollectionSchema>,
+) => {
+  const session = await auth();
+
+  if (!session?.user?.roles.includes("admin")) {
+    throw new Error("Unauthorized");
+  }
+
+  const { success, data, error } = EditCollectionSchema.safeParse(payload);
+  if (!success) {
+    throw new Error("Invalid Request", {
+      cause: error.errors,
+    });
+  }
+  const { id: collectionId, ...dataToUpdate } = data;
+  const { id } = await db
+    .update(collectionTable)
+    .set({
+      ...dataToUpdate,
+      updatedBy: session?.user.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(collectionTable.id, collectionId))
+    .returning()
+    .then((res) => res[0]);
+  return { id };
 };

@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { db, upload } from "@/db";
+import { db, uploadTable } from "@/db";
 import { UploadFileToS3 } from "@/lib/aws-s3";
 import {
   respondError,
@@ -33,7 +33,7 @@ export const POST = auth(async (req) => {
     if (!compressed.Key)
       return respondError({ message: "Error uploading file", status: 500 });
     const { id, path } = await db
-      .insert(upload)
+      .insert(uploadTable)
       .values({
         assetType,
         entityType,
@@ -41,8 +41,8 @@ export const POST = auth(async (req) => {
         uploadedBy: user.id,
       })
       .returning({
-        id: upload.id,
-        path: upload.path,
+        id: uploadTable.id,
+        path: uploadTable.path,
       })
       .then((res) => res[0]);
     const data: PostUploadResponse = {
