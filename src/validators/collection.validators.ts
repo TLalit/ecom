@@ -10,7 +10,7 @@ export const CreateCollectionSchema = z.object({
   visibility: z.enum([VisibilityEnum.PUBLIC, VisibilityEnum.PRIVATE]),
 });
 
-export const EdditCollectionSchema = CreateCollectionSchema.merge(
+export const EditCollectionSchema = CreateCollectionSchema.merge(
   z.object({
     id: z.string(),
   }),

@@ -6,7 +6,7 @@ import { createMainUrl, createThumbnailUrl } from "@/lib/string.helper";
 import { StatusEnum, VisibilityEnum } from "@/types/collection.api.types";
 import {
   CreateCollectionSchema,
-  EdditCollectionSchema,
+  EditCollectionSchema,
 } from "@/validators/collection.validators";
 import { and, count, eq, inArray, isNull } from "drizzle-orm";
 import { z } from "zod";
@@ -188,7 +188,7 @@ export const deleteCollectionByIdAction = async ({ id }: { id: string }) => {
 
 };
 export const editCollectionAction = async (
-  payload: z.infer<typeof EdditCollectionSchema>,
+  payload: z.infer<typeof EditCollectionSchema>,
 ) => {
   const session = await auth();
 
@@ -196,7 +196,7 @@ export const editCollectionAction = async (
     throw new Error("Unauthorized");
   }
 
-  const { success, data, error } = EdditCollectionSchema.safeParse(payload);
+  const { success, data, error } = EditCollectionSchema.safeParse(payload);
   if (!success) {
     throw new Error("Invalid Request", {
       cause: error.errors,
