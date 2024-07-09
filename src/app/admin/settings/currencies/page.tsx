@@ -20,7 +20,6 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Checkbox } from "@/components/ui/checkbox";
 import { FieldValues, useController, useForm, useFormContext, UseFormSetValue } from "react-hook-form";
 import { z } from "zod";
-import { addCurrencyClientSchema } from "@/validators/currency.validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -111,12 +110,12 @@ const AddCurrencySheet = ({ children, currencies }: PropsWithChildren<{ currenci
     const definedCurr: [string, number][] = Object.entries(data).filter(curr => curr[1]);
     const availableCurrencies = definedCurr.reduce((acc, curr) => {
       const tempCurr = {
-        id: curr[0],
+        currencyId: curr[0],
         value: formatCurrency(Number(curr[1]))
       };
       acc.push(tempCurr);
       return acc;
-    }, [] as { id: string, value: number }[]);
+    }, [] as { currencyId: string, value: number }[]);
     addCurrencyHandler.mutate({ availableCurrencies })
 
   })

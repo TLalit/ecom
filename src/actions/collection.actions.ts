@@ -13,7 +13,7 @@ import { z } from "zod";
 import { getPaginationValues } from "./action.helpers";
 import { PaginationParams } from "./action.types";
 
-export interface GetCollectionPayload extends PaginationParams {}
+export interface GetCollectionPayload extends PaginationParams { }
 export type GetCollectionActionResponse = Awaited<
   ReturnType<typeof getCollectionAction>
 >;
@@ -81,10 +81,10 @@ export const getCollectionAction = async ({
     visibility: collection.visibility as VisibilityEnum,
     image: collection.image
       ? {
-          id: collection.image.id,
-          url: createMainUrl(collection.image.url),
-          thumbnailUrl: createThumbnailUrl(collection.image.url),
-        }
+        id: collection.image.id,
+        url: createMainUrl(collection.image.url),
+        thumbnailUrl: createThumbnailUrl(collection.image.url),
+      }
       : null,
   }));
 
@@ -143,10 +143,10 @@ export const getCollectionBySlugAction = async ({ slug }: { slug: string }) => {
     visibility: collectionBySlug.visibility as VisibilityEnum,
     image: collectionBySlug.image
       ? {
-          id: collectionBySlug.image.id,
-          url: createMainUrl(collectionBySlug.image.url),
-          thumbnailUrl: createThumbnailUrl(collectionBySlug.image.url),
-        }
+        id: collectionBySlug.image.id,
+        url: createMainUrl(collectionBySlug.image.url),
+        thumbnailUrl: createThumbnailUrl(collectionBySlug.image.url),
+      }
       : null,
   };
   return collectionWithImageUrls;
@@ -184,7 +184,8 @@ export const deleteCollectionByIdAction = async ({ id }: { id: string }) => {
   if (!session?.user?.roles.includes("admin")) {
     throw new Error("Unauthorized");
   }
-  return await db.delete(collection).where(eq(collection.id, id));
+  return await db.delete(collection).where(eq(collection.id, id)).returning({ id: collection.id });
+
 };
 export const editCollectionAction = async (
   payload: z.infer<typeof EdditCollectionSchema>,

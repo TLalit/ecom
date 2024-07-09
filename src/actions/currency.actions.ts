@@ -2,16 +2,15 @@
 import { auth } from "@/auth";
 import { currency, db } from "@/db";
 import {
-  AvailabelCurrencySchema,
+  AvailableCurrencySchema,
   // AvailableCurrencyActionsSchema,
   DefaultCurrencySchema,
   EditCurrencySchema,
 } from "@/validators/currency.validators";
-import { count, eq, inArray } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import { z } from "zod";
 import { PaginationParams } from "./action.types";
 
-export interface GetCurrencyAction extends PaginationParams { }
 
 export type GetCurrencyActionResponse = Awaited<
   ReturnType<typeof getCurrencyAction>
@@ -23,7 +22,7 @@ export const getCurrencyAction = async () => {
     throw new Error("Unauthorized");
   }
 
-  const getCurrency = db
+  const currencies = await db
     .select({
       id: currency.id,
       name: currency.name,
@@ -35,27 +34,15 @@ export const getCurrencyAction = async () => {
     })
     .from(currency)
 
-  const getTotalCount = db
-    .select({
-      total: count(),
-    })
-    .from(currency)
-    .then((res) => res[0].total);
-
-  const [currencies, totalCount] = await Promise.all([
-    getCurrency,
-    getTotalCount,
-  ]);
-
 
   return {
     currencies,
-    total: totalCount,
+    total: currencies.length,
   };
 };
 
 export const createAvailableCurrencyAction = async (
-  payload: z.infer<typeof AvailabelCurrencySchema>,
+  payload: z.infer<typeof AvailableCurrencySchema>,
 ) => {
 
   const session = await auth();
@@ -64,7 +51,7 @@ export const createAvailableCurrencyAction = async (
     throw new Error("Unauthorized");
   }
   const { success, data, error } =
-    AvailabelCurrencySchema.safeParse(payload);
+    AvailableCurrencySchema.safeParse(payload);
 
   if (!success) {
     throw new Error("Invalid Request", {
@@ -76,18 +63,18 @@ export const createAvailableCurrencyAction = async (
 
     const updateCurrency = db.update(currency).set({
       isAvailable: true,
-      value: curr.value
-    }).where(eq(currency.id, curr.id)).returning()
+      value: curr.value,
+      updatedAt: new Date(),
+      updatedBy: session.user.id
+    }).where(eq(currency.id, curr.currencyId)).returning()
       .then((res) => res[0].id);
 
     return updateCurrency
   })
 
-  const availableCurrencies = await Promise.all(availableCurrencyMap)
+  return await Promise.all(availableCurrencyMap)
 
-  return {
-    availableCurrencies,
-  };
+
 };
 
 export const deleteAvailableCurrencyAction = async (
@@ -109,18 +96,16 @@ export const deleteAvailableCurrencyAction = async (
     });
   }
 
-  const { id } = await db
+  return await db
     .update(currency)
     .set({
       isAvailable: false,
       updatedAt: new Date(),
-      updatedBy: session.user.name
+      updatedBy: session.user.id
     })
     .where(eq(currency.id, data.currencyId))
-    .returning()
-    .then((res) => res[0]);
+    .returning({ id: currency.id })
 
-  return id;
 };
 
 export const updateDefaultCurrencyAction = async (
@@ -147,6 +132,7 @@ export const updateDefaultCurrencyAction = async (
         .set({
           isDefault: false,
           updatedAt: new Date(),
+          updatedBy: session.user.id
         })
         .where(eq(currency.isDefault, true));
 
@@ -155,6 +141,7 @@ export const updateDefaultCurrencyAction = async (
         .set({
           isDefault: true,
           updatedAt: new Date(),
+          updatedBy: session.user.id
         })
         .where(eq(currency.id, data.currencyId));
     })

@@ -1,22 +1,17 @@
 import { z } from "zod";
 
-// export const AvailableCurrencyActionsSchema = z.object({
-//   currencyIds: z.array(z.string()),
-// });
-
 export const DefaultCurrencySchema = z.object({
   currencyId: z.string(),
 });
 
-export const DeleteCurrecncySchema = z.object({
+export const DeleteCurrencySchema = z.object({
   currencyIds: z.array(z.string()),
 })
 
-export const AvailabelCurrencySchema = z.object({
-  availableCurrencies: z.array(z.object({ id: z.string(), value: z.number() }))
+export const AvailableCurrencySchema = z.object({
+  availableCurrencies: z.array(z.object({ currencyId: z.string(), value: z.number() }))
 })
 
 export const EditCurrencySchema = z.object({ currencyId: z.string(), value: z.number() })
 
-export const addCurrencyClientSchema = z.record(z.string(), z.number())
 

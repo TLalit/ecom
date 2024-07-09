@@ -161,7 +161,7 @@ export const CreateUpdateCollectionSheet = ({
       image: row?.image ? [row?.image] : [],
       slug: row?.slug,
       status: row?.status ?? StatusEnum.ACTIVE,
-      title: row?.visibility ?? VisibilityEnum.PUBLIC,
+      title: row?.title,
       visibility: row?.visibility,
     },
     resolver: zodResolver(createCollectionClientSchema),
