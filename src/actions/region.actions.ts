@@ -1,5 +1,7 @@
+"use server"
 import { auth } from "@/auth";
 import { CountryTable, db, RegionTable } from "@/db";
+import { createUpdateCountriesAction, } from "@/db/helpers/country";
 import { CreateRegionSchema, DeleteRegionSchema, EditRegionSchema } from "@/validators/region.validators";
 import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
@@ -7,6 +9,12 @@ import { z } from "zod";
 export type fetchRegionsActionResponse = Awaited<ReturnType<typeof fetchRegionsAction>>;
 
 export const fetchRegionsAction = async () => {
+    const session = await auth();
+
+    if (!session?.user?.roles.includes("admin")) {
+        throw new Error("Unauthorized");
+    }
+
     const regions = await db
         .select({
             id: RegionTable.id,
@@ -43,15 +51,25 @@ export const createRegionAction = async (payload: z.infer<typeof CreateRegionSch
     }
 
     const { regionId, currencyId, name, countryIds } = data;
-    //todo: country table update with regionId for all countryIds
-    return await db.insert(RegionTable)
-        .values({
-            id: regionId,
-            name,
-            currencyId,
-            updatedBy: session?.user.id,
+
+    return await db.transaction(async (trx) => {
+        await createUpdateCountriesAction({ regionId, countryIds }, {
+            mode: 'create',
+            trx,
+            session
+
         })
-        .returning({ id: RegionTable.id })
+
+        await trx.insert(RegionTable)
+            .values({
+                id: regionId,
+                name,
+                currencyId,
+                updatedBy: session?.user.id,
+            })
+            .returning({ id: RegionTable.id })
+
+    })
 
 
 }
@@ -71,13 +89,16 @@ export const editRegionAction = async (payload: z.infer<typeof EditRegionSchema>
     }
 
     const { regionId, countryIds, ...dataToUpdate } = data;
-    //todo: country table update with regionId for all countryIds
 
-    return await db
-        .update(RegionTable)
-        .set({ ...dataToUpdate, updatedBy: session.user.id, updatedAt: new Date() })
-        .where(eq(RegionTable.id, regionId))
-        .returning({ id: RegionTable.id });
+    return await db.transaction(async (trx) => {
+
+        await createUpdateCountriesAction({ regionId, countryIds }, { mode: 'edit', trx, session })
+
+        await trx.update(RegionTable)
+            .set({ ...dataToUpdate, updatedBy: session.user.id, updatedAt: new Date() })
+            .where(eq(RegionTable.id, regionId))
+            .returning({ id: RegionTable.id });
+    })
 }
 
 export const deleteRegionAction = async (payload: z.infer<typeof DeleteRegionSchema>) => {
@@ -96,10 +117,13 @@ export const deleteRegionAction = async (payload: z.infer<typeof DeleteRegionSch
 
     const { regionId } = data;
 
-    //todo: country table update with regionId for all countryIds
+    return await db.transaction(async (trx) => {
+        await createUpdateCountriesAction({ regionId, countryIds: [] }, { mode: 'edit', trx, session })
 
-    return await db
-        .delete(RegionTable)
-        .where(eq(RegionTable.id, regionId))
-        .returning({ id: RegionTable.id });
+        await trx
+            .delete(RegionTable)
+            .where(eq(RegionTable.id, regionId))
+            .returning({ id: RegionTable.id });
+    })
+
 };

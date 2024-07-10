@@ -118,7 +118,7 @@ export const updateDefaultCurrencyAction = async (
     });
   }
 
-  await db
+  return await db
     .transaction(async (tx) => {
       await tx
         .update(currencyTable)
@@ -136,9 +136,9 @@ export const updateDefaultCurrencyAction = async (
           updatedAt: new Date(),
           updatedBy: session.user.id,
         })
-        .where(eq(currencyTable.id, data.currencyId));
+        .where(eq(currencyTable.id, data.currencyId))
+        .returning({ id: currencyTable.id });
     })
-    .then((res) => console.log(res));
 };
 
 export const editAvailableCurrencyActions = async (

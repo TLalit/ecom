@@ -10,7 +10,8 @@ const RegionIdSchema = RegionSchema.transform((data) => data.regionId)
 
 export const CreateRegionSchema = RegionSchema.merge(
     z.object({
-        countryIds: z.string().array()
+        countryIds: z.string().array(),
+
     })
 )
 
