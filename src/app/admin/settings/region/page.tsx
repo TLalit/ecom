@@ -155,17 +155,17 @@ const CreateEditRegionSheet = ({ children, row, mode }: PropsWithChildren<{
             form.reset();
             onOpenChange(prv => !prv)
             queryClient.refetchQueries({
-                // queryKey: ['fetchRegions', 'fetchCountry'],
+                queryKey: [['fetchRegions'], ['fetchCountry']],
 
             })
         },
     });
-
+    console.log(row?.original.countries)
     const form = useForm<z.infer<typeof RegionClientSchema>>({
         defaultValues: {
             title: row?.original.name,
             currencyId: row?.original.currencies[0].id,
-            countries: row?.original.countries?.map((country) => country.id)
+            countries: row?.original.countries?.filter(c => !c.regionId)?.map((country) => country.id)
         },
         resolver: zodResolver(RegionClientSchema),
     });
