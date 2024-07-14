@@ -1,6 +1,6 @@
 "use server"
 import { auth } from "@/auth";
-import { CountryTable, db, RegionTable } from "@/db";
+import { CountryTable, currencyTable, db, RegionTable } from "@/db";
 import { createUpdateCountriesAction, } from "@/db/helpers/country";
 import { CreateRegionSchema, DeleteRegionSchema, EditRegionSchema } from "@/validators/region.validators";
 import { eq, sql } from "drizzle-orm";
@@ -9,6 +9,7 @@ import { z } from "zod";
 export type fetchRegionsActionResponse = Awaited<ReturnType<typeof fetchRegionsAction>>;
 
 export const fetchRegionsAction = async () => {
+    console.log("iran")
     const session = await auth();
 
     if (!session?.user?.roles.includes("admin")) {
@@ -22,14 +23,21 @@ export const fetchRegionsAction = async () => {
             countries: sql<{
                 id: string,
                 name: string,
-                displayName: string
+                display_name: string
                 regionId: string
-            }[]>`COALESCE(json_agg(${CountryTable}),'[]')`
+            }[]>`COALESCE(json_agg(${CountryTable}),'[]')`,
+            currencies: sql<{
+                id: string,
+                name: string,
+                code: string,
+                symbol: string,
+                value: number,
+            }[]>`COALESCE(json_agg(${currencyTable}),'[]')`
         })
         .from(RegionTable)
+        .leftJoin(currencyTable, eq(RegionTable.currencyId, currencyTable.id))
         .leftJoin(CountryTable, eq(RegionTable.id, CountryTable.regionId))
         .groupBy(RegionTable.id);
-
     return {
         regions,
         total: regions.length
@@ -50,9 +58,17 @@ export const createRegionAction = async (payload: z.infer<typeof CreateRegionSch
         });
     }
 
-    const { regionId, currencyId, name, countryIds } = data;
+    const { currencyId, name, countryIds } = data;
 
     return await db.transaction(async (trx) => {
+        const region = await trx.insert(RegionTable)
+            .values({
+                name,
+                currencyId,
+                updatedBy: session?.user.id,
+            })
+            .returning({ id: RegionTable.id })
+        const regionId = region[0].id;
         await createUpdateCountriesAction({ regionId, countryIds }, {
             mode: 'create',
             trx,
@@ -60,14 +76,7 @@ export const createRegionAction = async (payload: z.infer<typeof CreateRegionSch
 
         })
 
-        await trx.insert(RegionTable)
-            .values({
-                id: regionId,
-                name,
-                currencyId,
-                updatedBy: session?.user.id,
-            })
-            .returning({ id: RegionTable.id })
+
 
     })
 
@@ -102,6 +111,7 @@ export const editRegionAction = async (payload: z.infer<typeof EditRegionSchema>
 }
 
 export const deleteRegionAction = async (payload: z.infer<typeof DeleteRegionSchema>) => {
+    console.log(payload)
     const session = await auth();
 
     if (!session?.user?.roles.includes("admin")) {
@@ -118,7 +128,7 @@ export const deleteRegionAction = async (payload: z.infer<typeof DeleteRegionSch
     const { regionId } = data;
 
     return await db.transaction(async (trx) => {
-        await createUpdateCountriesAction({ regionId, countryIds: [] }, { mode: 'edit', trx, session })
+        await createUpdateCountriesAction({ regionId, countryIds: [] }, { mode: 'delete', trx, session })
 
         await trx
             .delete(RegionTable)

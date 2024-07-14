@@ -372,7 +372,6 @@ const DefaultCurrency = ({ availableCurrencies }: { availableCurrencies: GetCurr
       <Button
         variant="outline"
         role="combobox"
-        aria-expanded={open}
         className="w-[200px] justify-between"
       >
         {value
@@ -394,10 +393,11 @@ const DefaultCurrency = ({ availableCurrencies }: { availableCurrencies: GetCurr
                 value={curr.name}
                 onSelect={(currentValue) => {
                   console.log(currentValue)
-                  setValue(currentValue === value ? "" : currentValue)
+                  setValue(currentValue === value ? value : currentValue)
                   setOpen(false)
                   defaultCurrency.mutate({ currencyId: curr.id })
                 }}
+
               >
                 {curr.name}
               </CommandItem>

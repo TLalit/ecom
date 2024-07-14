@@ -3,7 +3,6 @@ import { auth } from "@/auth";
 import { currencyTable, db } from "@/db";
 import {
   AvailableCurrencySchema,
-  // AvailableCurrencyActionsSchema,
   DefaultCurrencySchema,
   EditCurrencySchema,
 } from "@/validators/currency.validators";
