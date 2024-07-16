@@ -227,12 +227,12 @@ const CreateEditRegionSheet = ({ children, row, mode }: PropsWithChildren<{
                                 </FormItem>
                             }}
                         />
-                        <div className="flex justify-between">
+                        <div className="flex gap-2">
                             <FormField
                                 control={form.control}
                                 name="currencyId"
                                 render={({ field }) => {
-                                    return <FormItem>
+                                    return <FormItem className="w-1/2">
                                         <FormLabel>Currency</FormLabel>
                                         <FormControl>
                                             <CurrencyDropdown currencies={currencies} handleCurrency={handleCurrency} currencyId={form.getValues('currencyId')} />
@@ -244,7 +244,7 @@ const CreateEditRegionSheet = ({ children, row, mode }: PropsWithChildren<{
                                 control={form.control}
                                 name="countries"
                                 render={({ field: { onChange } }) => {
-                                    return <FormItem className="ml-2 w-1/2" >
+                                    return <FormItem className="w-1/2" >
                                         <FormLabel>Countries</FormLabel>
                                         <FormControl>
                                             <MultiSelect
@@ -255,6 +255,7 @@ const CreateEditRegionSheet = ({ children, row, mode }: PropsWithChildren<{
                                                 variant="secondary"
                                                 animation={2}
                                                 maxCount={100}
+                                                className="w-full"
                                             />
                                         </FormControl>
                                     </FormItem>
@@ -296,7 +297,7 @@ const CurrencyDropdown = ({ currencies, handleCurrency, currencyId }: {
             <Button
                 variant="outline"
                 role="combobox"
-                className="w-[200px] justify-between "
+                className="w-full justify-between py-5"
             >
                 {value.name
                     ? currencies.find((curr) => curr.name === value.name)?.name
