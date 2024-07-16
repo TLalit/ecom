@@ -16,7 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Row } from "@tanstack/react-table";
 import { ChevronsUpDown } from "lucide-react";
-import { PropsWithChildren, useCallback, useState } from "react";
+import { PropsWithChildren, useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {
@@ -29,13 +29,9 @@ import {
 export default function Page() {
     //Region Query
     const { data, isFetching } = useQuery<fetchRegionsActionResponse>({
-
         queryKey: ["fetchRegions"],
         queryFn: async () => await fetchRegionsAction(),
-
-
     })
-    console.log(data)
     return (
         <main className="container flex min-h-[calc(100vh-theme(space.20))] flex-1 flex-col gap-5 rounded-2xl bg-background py-8">
             <header className=" relative flex align-middle justify-between gap-5">
@@ -65,7 +61,7 @@ export default function Page() {
 const RegionColumns: DataTableProps<fetchRegionsActionResponse["regions"][0]>["columns"] = [
     {
         header: "Name",
-        accessorKey: "name",
+        accessorKey: "region",
     },
     {
         header: "Currency",
@@ -111,6 +107,7 @@ const CreateEditRegionSheet = ({ children, row, mode }: PropsWithChildren<{
 }>) => {
     const [isOpen, onOpenChange] = useState(false)
     const queryClient = useQueryClient()
+
     //Currency Query
     const { data: currencies } = useQuery({
         queryKey: ["fetchCurrency"],
@@ -125,10 +122,13 @@ const CreateEditRegionSheet = ({ children, row, mode }: PropsWithChildren<{
         queryKey: ["fetchCountry"],
         queryFn: async () => await fetchCountriesAction(),
         select(data) {
-            return data?.map((country) => ({
-                label: country.displayName,
-                value: country.id
-            }))
+            return data?.map((country) => {
+                return {
+                    label: `${country.displayName} ${country.regionId && country.regionId !== row?.original.id ? regionsIdNameMap?.[country.regionId] : ""}`,
+                    value: country.id,
+                    isDisabled: mode === 'Create' ? !!country.regionId : country.regionId !== row?.original.id && country.regionId !== null
+                }
+            })
         },
     })
 
@@ -143,8 +143,21 @@ const CreateEditRegionSheet = ({ children, row, mode }: PropsWithChildren<{
             queryClient.refetchQueries({
                 queryKey: ["fetchRegions"],
             })
+            queryClient.refetchQueries({
+                queryKey: ['fetchCountry'],
+            })
         },
     });
+
+    //fetch all regions
+    const regionsIdNameMap = useMemo(() => {
+        const regions = queryClient.getQueryData<fetchRegionsActionResponse>(["fetchRegions"])?.regions
+        return regions?.reduce((acc, ele) => ({
+            ...acc,
+            [ele.id]: ele.region
+        }), {} as Record<string, string>)
+
+    }, [queryClient])
 
     //edit Region
     const editRegionMutation = useMutation({
@@ -155,17 +168,19 @@ const CreateEditRegionSheet = ({ children, row, mode }: PropsWithChildren<{
             form.reset();
             onOpenChange(prv => !prv)
             queryClient.refetchQueries({
-                queryKey: [['fetchRegions'], ['fetchCountry']],
-
-            })
+                queryKey: ['fetchRegions'],
+            }),
+                queryClient.refetchQueries({
+                    queryKey: ['fetchCountry'],
+                })
         },
     });
-    console.log(row?.original.countries)
+
     const form = useForm<z.infer<typeof RegionClientSchema>>({
-        defaultValues: {
-            title: row?.original.name,
+        defaultValues: mode === 'Create' ? {} : {
+            title: row?.original.region,
             currencyId: row?.original.currencies[0].id,
-            countries: row?.original.countries?.filter(c => !c.regionId)?.map((country) => country.id)
+            countries: row?.original?.countries?.map((country) => country.id)
         },
         resolver: zodResolver(RegionClientSchema),
     });
@@ -184,6 +199,7 @@ const CreateEditRegionSheet = ({ children, row, mode }: PropsWithChildren<{
             })
 
     })
+
     const handleCurrency = useCallback((currencyId: string) => {
         form.setValue('currencyId', currencyId)
     }, [form])
@@ -193,7 +209,7 @@ const CreateEditRegionSheet = ({ children, row, mode }: PropsWithChildren<{
         <Form {...form}>
             <SheetContent >
                 <SheetHeader>
-                    <SheetTitle>Create Region</SheetTitle>
+                    <SheetTitle>{mode} Region</SheetTitle>
                 </SheetHeader>
                 <form onSubmit={handleSubmit}>
                     <div className="body flex flex-col gap-5 my-4">
@@ -247,7 +263,7 @@ const CreateEditRegionSheet = ({ children, row, mode }: PropsWithChildren<{
                         </div>
 
                         <Button type="submit" variant="outline" className="flex-1">
-                            Create
+                            {mode}
                         </Button>
                     </div>
                 </form>
@@ -322,6 +338,7 @@ const CurrencyDropdown = ({ currencies, handleCurrency, currencyId }: {
 
     </Popover>
 }
+
 const ActionsDropdown = ({ row }: { row: Row<fetchRegionsActionResponse['regions'][0]> }) => {
     const queryClient = useQueryClient();
     const deleteRegion = useMutation({

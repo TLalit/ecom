@@ -9,7 +9,6 @@ import { z } from "zod";
 export type fetchRegionsActionResponse = Awaited<ReturnType<typeof fetchRegionsAction>>;
 
 export const fetchRegionsAction = async () => {
-    console.log("iran")
     const session = await auth();
 
     if (!session?.user?.roles.includes("admin")) {
@@ -19,7 +18,7 @@ export const fetchRegionsAction = async () => {
     const regions = await db
         .select({
             id: RegionTable.id,
-            name: RegionTable.name,
+            region: RegionTable.name,
             countries: sql<{
                 id: string,
                 name: string,
@@ -68,7 +67,9 @@ export const createRegionAction = async (payload: z.infer<typeof CreateRegionSch
                 updatedBy: session?.user.id,
             })
             .returning({ id: RegionTable.id })
+
         const regionId = region[0].id;
+
         await createUpdateCountriesAction({ regionId, countryIds }, {
             mode: 'create',
             trx,
@@ -111,7 +112,6 @@ export const editRegionAction = async (payload: z.infer<typeof EditRegionSchema>
 }
 
 export const deleteRegionAction = async (payload: z.infer<typeof DeleteRegionSchema>) => {
-    console.log(payload)
     const session = await auth();
 
     if (!session?.user?.roles.includes("admin")) {

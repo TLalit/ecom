@@ -1,7 +1,7 @@
 "use server"
 import { CountryTable, db } from "@/db";
 import { UpdateCountriesSchema } from "@/validators/country.vallidators";
-import { eq, ExtractTablesWithRelations, inArray } from "drizzle-orm";
+import { and, eq, ExtractTablesWithRelations, inArray } from "drizzle-orm";
 import { NodePgQueryResultHKT } from "drizzle-orm/node-postgres";
 import { PgTransaction } from "drizzle-orm/pg-core";
 import { Session } from "next-auth";
@@ -37,7 +37,7 @@ export const createUpdateCountriesAction = async (payload: z.infer<typeof Update
         return await db
             .update(CountryTable)
             .set({ regionId, updatedAt: new Date(), updatedBy: session.user.id })
-            .where(inArray(CountryTable.id, countryIds))
+            .where(and(inArray(CountryTable.id, countryIds),))
             .returning({ id: CountryTable.id });
 
     }

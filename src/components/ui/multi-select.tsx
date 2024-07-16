@@ -67,8 +67,13 @@ interface MultiSelectProps
         label: string;
         /** The unique value associated with the option. */
         value: string;
+        /** to disable. */
+        isDisabled?: boolean;
         /** Optional icon component to display alongside the option. */
         icon?: React.ComponentType<{ className?: string }>;
+
+
+
     }[];
 
     /**
@@ -189,7 +194,7 @@ export const MultiSelect = React.forwardRef<
             if (selectedValues.length === options.length) {
                 handleClear();
             } else {
-                const allValues = options.map((option) => option.value);
+                const allValues = options.filter((opt) => !opt.isDisabled).map((option) => option.value);
                 setSelectedValues(allValues);
                 onValueChange(allValues);
             }
@@ -319,6 +324,7 @@ export const MultiSelect = React.forwardRef<
                                     const isSelected = selectedValues.includes(option.value);
                                     return (
                                         <CommandItem
+                                            disabled={option.isDisabled}
                                             key={option.value}
                                             onSelect={() => toggleOption(option.value)}
                                             className="cursor-pointer"
