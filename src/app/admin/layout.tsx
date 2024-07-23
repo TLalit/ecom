@@ -5,12 +5,7 @@ import { ConfirmationDialog } from "@/components/global/confirmation-dialog";
 import { UserMenu } from "@/components/global/user-menu";
 import { IconProps, LucideIcon } from "@/components/icons/icon";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { RedirectType, redirect } from "next/navigation";
 import { PropsWithChildren } from "react";
 import { ThemeSwitch } from "../theme-switch";
@@ -19,32 +14,32 @@ const sidebarItems: {
   icon: IconProps["name"];
   href: string;
 }[] = [
-    {
-      name: "Dashboard",
-      icon: "Home",
-      href: "/admin",
-    },
-    {
-      name: "Collection",
-      icon: "LayoutDashboard",
-      href: "/admin/collection",
-    },
-    {
-      name: "Orders",
-      icon: "ShoppingCart",
-      href: "/admin/orders",
-    },
-    {
-      name: "Products",
-      icon: "Package",
-      href: "/admin/products",
-    },
-    {
-      name: "Customers",
-      icon: "Users",
-      href: "/admin/customers",
-    },
-  ];
+  {
+    name: "Dashboard",
+    icon: "Home",
+    href: "/admin",
+  },
+  {
+    name: "Collection",
+    icon: "LayoutDashboard",
+    href: "/admin/collection",
+  },
+  {
+    name: "Orders",
+    icon: "ShoppingCart",
+    href: "/admin/orders",
+  },
+  {
+    name: "Products",
+    icon: "Package",
+    href: "/admin/products",
+  },
+  {
+    name: "Customers",
+    icon: "Users",
+    href: "/admin/customers",
+  },
+];
 export default async function AdminRootLayout({ children }: PropsWithChildren) {
   const session = await auth();
   if (!session) {
@@ -55,10 +50,7 @@ export default async function AdminRootLayout({ children }: PropsWithChildren) {
       <TooltipProvider>
         <div className="flex min-h-screen flex-col">
           <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-background px-4 pl-0">
-            <Link
-              href="#"
-              className="flex h-full w-14 items-center justify-center border-r"
-            >
+            <Link href="#" className="flex h-full w-14 items-center justify-center border-r">
               <LucideIcon name="Store" className="size-8" />
             </Link>
             {/* <Breadcrumb className="hidden md:flex">
@@ -105,10 +97,7 @@ export default async function AdminRootLayout({ children }: PropsWithChildren) {
               </nav>
               <nav className="flex flex-col items-center gap-4 px-2 sm:py-4">
                 <Tooltip>
-                  <TooltipTrigger
-                    asChild
-                    className="flex size-10 items-center justify-center"
-                  >
+                  <TooltipTrigger asChild className="flex size-10 items-center justify-center">
                     <Link href="/admin/settings">
                       <LucideIcon name="Settings" />
                       <span className="sr-only">Settings</span>

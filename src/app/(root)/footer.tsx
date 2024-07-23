@@ -77,9 +77,7 @@ export const Footer = () => {
         <div className="flex flex-1 flex-col items-center justify-center gap-4">
           <p>Connect</p>
           <h1 className="text-5xl font-bold">Get in Touch</h1>
-          <p className="text-lg">
-            We&apos;d love to hear from you. Contact us today!
-          </p>
+          <p className="text-lg">We&apos;d love to hear from you. Contact us today!</p>
           <div className="flex w-full gap-10">
             {(
               [
@@ -93,8 +91,7 @@ export const Footer = () => {
                 {
                   icon: "Phone",
                   label: "Phone",
-                  tagline:
-                    "Give us a call for immediate assistance or support.",
+                  tagline: "Give us a call for immediate assistance or support.",
                   link: "tel:+1234567890",
                   linkLabel: "Call Now",
                 },
@@ -107,10 +104,7 @@ export const Footer = () => {
                 },
               ] as const
             ).map((item, index) => (
-              <div
-                key={item.label}
-                className="flex flex-1 flex-col items-center justify-center gap-5"
-              >
+              <div key={item.label} className="flex flex-1 flex-col items-center justify-center gap-5">
                 <LucideIcon name={item.icon} className="size-16" />
                 <label className="text-3xl font-bold">{item.label}</label>
                 <p className="flex-1 text-center text-lg">{item.tagline}</p>
@@ -135,17 +129,11 @@ export const Footer = () => {
                 key={workingHours.title}
                 title={workingHours.title}
               >
-                <span className="text-center text-xl font-bold">
-                  {workingHours.title}
-                </span>
+                <span className="text-center text-xl font-bold">{workingHours.title}</span>
                 {workingHours.links.map((link, j) => {
                   return (
-                    <p
-                      key={link.label}
-                      className="flex gap-2 rounded-lg p-1 transition-colors"
-                    >
-                      <span className="w-9 font-bold">{link.label}</span>:
-                      <span>{link.description}</span>
+                    <p key={link.label} className="flex gap-2 rounded-lg p-1 transition-colors">
+                      <span className="w-9 font-bold">{link.label}</span>:<span>{link.description}</span>
                     </p>
                   );
                 })}
@@ -153,11 +141,7 @@ export const Footer = () => {
               </div>
               {footerLinks.map((section, i) => {
                 return (
-                  <div
-                    className="flex flex-1 flex-col gap-1 md:items-start"
-                    key={section.title}
-                    title={section.title}
-                  >
+                  <div className="flex flex-1 flex-col gap-1 md:items-start" key={section.title} title={section.title}>
                     <span className="text-xl font-bold">{section.title}</span>
                     {section.links.map((link, j) => {
                       return (
@@ -183,28 +167,22 @@ export const Footer = () => {
           <div className="flex flex-1 flex-col items-center gap-4">
             <span className="text-xl font-bold">Fast Shipping Worldwide</span>
             <div className="flex flex-row gap-2">
-              {[
-                { img: "fedex" },
-                { img: "dhl" },
-                { img: "ups" },
-                { img: "aramex" },
-                { img: "bluedart" },
-              ].map((logo, i) => (
-                <Image
-                  alt={logo.img}
-                  src={`/images/delivery/${logo.img}.png`}
-                  key={logo.img}
-                  width={48}
-                  height={48}
-                  className="drop-shadow-2xl"
-                />
-              ))}
+              {[{ img: "fedex" }, { img: "dhl" }, { img: "ups" }, { img: "aramex" }, { img: "bluedart" }].map(
+                (logo, i) => (
+                  <Image
+                    alt={logo.img}
+                    src={`/images/delivery/${logo.img}.png`}
+                    key={logo.img}
+                    width={48}
+                    height={48}
+                    className="drop-shadow-2xl"
+                  />
+                ),
+              )}
             </div>
           </div>
           <div className="flex flex-1 flex-col items-center gap-4">
-            <span className="text-xl font-bold">
-              Bulk and Cargo Shipping Worldwide
-            </span>
+            <span className="text-xl font-bold">Bulk and Cargo Shipping Worldwide</span>
             <div className="flex flex-row gap-2">
               {[{ img: "ship" }, { img: "plane" }].map((logo, i) => (
                 <Image
@@ -269,9 +247,7 @@ export const Footer = () => {
         </section>
         <Separator />
         <section className="container mx-auto flex items-center gap-5 py-5 text-center">
-          <span className="text-sm">
-            © Copyright 2006 - 2024 Concepts Source Inc.
-          </span>
+          <span className="text-sm">© Copyright 2006 - 2024 Concepts Source Inc.</span>
           {[
             {
               label: "Privacy Policy",
@@ -297,11 +273,7 @@ export const Footer = () => {
           ].map((link, i) => (
             <>
               <Separator orientation="vertical" className="h-4" />
-              <Link
-                key={link.label}
-                href={link.href}
-                className="hover:underline"
-              >
+              <Link key={link.label} href={link.href} className="hover:underline">
                 {link.label}
               </Link>
             </>

@@ -11,15 +11,11 @@ export const QualitySection: FC<PropsWithChildren<Props>> = () => {
     <section className="container flex min-h-[50vh] flex-col gap-10 lg:flex-row">
       <div className="flex flex-1 flex-col items-center justify-center gap-4">
         <p className="w-full">Quality</p>
-        <h1 className="text-5xl font-bold">
-          Experience the Best in Design and Service
-        </h1>
+        <h1 className="text-5xl font-bold">Experience the Best in Design and Service</h1>
         <p className="text-lg">
-          At Concepts Source Inc, we pride ourselves on our attention to design
-          trends, providing high-quality service, and ensuring timely
-          deliveries. With our extensive portfolio of collections for both men
-          and women, we offer unique and hot-selling designs that meet the
-          demands of various distribution channels.
+          At Concepts Source Inc, we pride ourselves on our attention to design trends, providing high-quality service,
+          and ensuring timely deliveries. With our extensive portfolio of collections for both men and women, we offer
+          unique and hot-selling designs that meet the demands of various distribution channels.
         </p>
         <div className="w-full">
           <Button asChild variant="outline">
@@ -34,11 +30,7 @@ export const QualitySection: FC<PropsWithChildren<Props>> = () => {
         </div>
       </div>
       <div className="relative min-h-80 flex-1 overflow-hidden rounded-xl">
-        <Image
-          src={`https://picsum.photos/1000/1000?abc=eee`}
-          alt="Creativity image"
-          fill
-        />
+        <Image src={`https://picsum.photos/1000/1000?abc=eee`} alt="Creativity image" fill />
       </div>
     </section>
   );

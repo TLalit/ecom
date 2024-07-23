@@ -64,11 +64,7 @@ export const LoginForm = () => {
             );
           }}
         />
-        <LoadingButton
-          loading={form.formState.isSubmitting}
-          type="submit"
-          className="w-full"
-        >
+        <LoadingButton loading={form.formState.isSubmitting} type="submit" className="w-full">
           Login
         </LoadingButton>
       </form>

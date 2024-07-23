@@ -12,10 +12,7 @@ export const useAuth = () => {
   const callbackUrl = searchParams.get("callbackUrl") ?? "/";
   const { data, status, update } = useSession();
   const router = useRouter();
-  const signInWithCredentials = async (credentials: {
-    email: string;
-    password: string;
-  }) => {
+  const signInWithCredentials = async (credentials: { email: string; password: string }) => {
     const res = await signIn("credentials", {
       redirect: false,
       callbackUrl,

@@ -16,16 +16,9 @@ import { LucideIcon } from "../icons/icon";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent } from "../ui/dialog";
 
-export const PreviewImage = forwardRef<HTMLImageElement, ImageProps>(
-  ({ alt = "image", className, ...props }, ref) => (
-    <Image
-      ref={ref}
-      alt={alt}
-      className={cn("rounded-xl border", className)}
-      {...props}
-    />
-  ),
-);
+export const PreviewImage = forwardRef<HTMLImageElement, ImageProps>(({ alt = "image", className, ...props }, ref) => (
+  <Image ref={ref} alt={alt} className={cn("rounded-xl border", className)} {...props} />
+));
 
 PreviewImage.displayName = "PreviewImage";
 
@@ -39,9 +32,7 @@ export const ImageList = ({
   onRemove?: (image: { src: string; index: number }) => void;
 }) => {
   return (
-    <div
-      className={clsx("flex gap-4", scroll ? "overflow-x-auto" : "flex-wrap")}
-    >
+    <div className={clsx("flex gap-4", scroll ? "overflow-x-auto" : "flex-wrap")}>
       {images.map(({ src, alt = "image", className, ...rest }, index) => {
         if (!src) return null;
         return (
@@ -81,10 +72,7 @@ export const ImageViewer = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { images } = useImagePreviewStore();
   const handleClose = () => {
-    setTimeout(
-      () => useImagePreviewStore.setState({ images: [], startFrom: "" }),
-      50,
-    );
+    setTimeout(() => useImagePreviewStore.setState({ images: [], startFrom: "" }), 50);
     setIsOpen(false);
   };
 

@@ -19,9 +19,7 @@ import {
   verificationTokenTable,
 } from "./db/schema";
 import { getFirst } from "./lib/array.helpers";
-const selectRoles = sql<
-  string[]
->`COALESCE(json_agg(role) FILTER (WHERE user_role.role IS NOT NULL), '[]')`;
+const selectRoles = sql<string[]>`COALESCE(json_agg(role) FILTER (WHERE user_role.role IS NOT NULL), '[]')`;
 export function authAdapter(client: PgDatabase<QueryResultHKT, any>): Adapter {
   return {
     async createUser(data: AdapterUser) {
@@ -78,15 +76,8 @@ export function authAdapter(client: PgDatabase<QueryResultHKT, any>): Adapter {
           .groupBy(userTable.id),
       );
     },
-    async createSession(data: {
-      sessionToken: string;
-      userId: string;
-      expires: Date;
-    }) {
-      const [session] = await client
-        .insert(sessionTable)
-        .values(data)
-        .returning();
+    async createSession(data: { sessionToken: string; userId: string; expires: Date }) {
+      const [session] = await client.insert(sessionTable).values(data).returning();
       return session;
     },
     async getSessionAndUser(sessionToken: string) {
@@ -110,18 +101,8 @@ export function authAdapter(client: PgDatabase<QueryResultHKT, any>): Adapter {
           .from(sessionTable)
           .innerJoin(userTable, eq(userTable.id, sessionTable.userId))
           .leftJoin(userRoleTable, eq(userTable.id, userRoleTable.userId))
-          .where(
-            and(
-              eq(sessionTable.sessionToken, sessionToken),
-              isNull(userTable.archivedAt),
-            ),
-          )
-          .groupBy(
-            userTable.id,
-            sessionTable.sessionToken,
-            sessionTable.userId,
-            sessionTable.expires,
-          ),
+          .where(and(eq(sessionTable.sessionToken, sessionToken), isNull(userTable.archivedAt)))
+          .groupBy(userTable.id, sessionTable.sessionToken, sessionTable.userId, sessionTable.expires),
       );
       return res;
     },
@@ -130,11 +111,7 @@ export function authAdapter(client: PgDatabase<QueryResultHKT, any>): Adapter {
         throw new Error("No user id.");
       }
 
-      const [result] = await client
-        .update(userTable)
-        .set(data)
-        .where(eq(userTable.id, data.id))
-        .returning();
+      const [result] = await client.update(userTable).set(data).where(eq(userTable.id, data.id)).returning();
 
       if (!result) {
         throw new Error("No user found.");
@@ -142,9 +119,7 @@ export function authAdapter(client: PgDatabase<QueryResultHKT, any>): Adapter {
 
       return result;
     },
-    async updateSession(
-      data: Partial<AdapterSession> & Pick<AdapterSession, "sessionToken">,
-    ) {
+    async updateSession(data: Partial<AdapterSession> & Pick<AdapterSession, "sessionToken">) {
       return client
         .update(sessionTable)
         .set(data)
@@ -155,9 +130,7 @@ export function authAdapter(client: PgDatabase<QueryResultHKT, any>): Adapter {
     async linkAccount(data: AdapterAccount) {
       await client.insert(accountTable).values(data);
     },
-    async getUserByAccount(
-      account: Pick<AdapterAccount, "provider" | "providerAccountId">,
-    ) {
+    async getUserByAccount(account: Pick<AdapterAccount, "provider" | "providerAccountId">) {
       const result = await client
         .select({
           account: accountTable,
@@ -176,9 +149,7 @@ export function authAdapter(client: PgDatabase<QueryResultHKT, any>): Adapter {
       return result?.user ?? null;
     },
     async deleteSession(sessionToken: string) {
-      await client
-        .delete(sessionTable)
-        .where(eq(sessionTable.sessionToken, sessionToken));
+      await client.delete(sessionTable).where(eq(sessionTable.sessionToken, sessionToken));
     },
     async createVerificationToken(data: VerificationToken) {
       return client
@@ -191,10 +162,7 @@ export function authAdapter(client: PgDatabase<QueryResultHKT, any>): Adapter {
       return client
         .delete(verificationTokenTable)
         .where(
-          and(
-            eq(verificationTokenTable.identifier, params.identifier),
-            eq(verificationTokenTable.token, params.token),
-          ),
+          and(eq(verificationTokenTable.identifier, params.identifier), eq(verificationTokenTable.token, params.token)),
         )
         .returning()
         .then((res) => (res.length > 0 ? res[0] : null));
@@ -202,28 +170,18 @@ export function authAdapter(client: PgDatabase<QueryResultHKT, any>): Adapter {
     async deleteUser(id: string) {
       await client.delete(userTable).where(eq(userTable.id, id));
     },
-    async unlinkAccount(
-      params: Pick<AdapterAccount, "provider" | "providerAccountId">,
-    ) {
+    async unlinkAccount(params: Pick<AdapterAccount, "provider" | "providerAccountId">) {
       await client
         .delete(accountTable)
         .where(
-          and(
-            eq(accountTable.provider, params.provider),
-            eq(accountTable.providerAccountId, params.providerAccountId),
-          ),
+          and(eq(accountTable.provider, params.provider), eq(accountTable.providerAccountId, params.providerAccountId)),
         );
     },
     async getAccount(providerAccountId: string, provider: string) {
       return client
         .select()
         .from(accountTable)
-        .where(
-          and(
-            eq(accountTable.provider, provider),
-            eq(accountTable.providerAccountId, providerAccountId),
-          ),
-        )
+        .where(and(eq(accountTable.provider, provider), eq(accountTable.providerAccountId, providerAccountId)))
         .then((res) => res[0] ?? null) as Promise<AdapterAccount | null>;
     },
     async createAuthenticator(data: AdapterAuthenticator) {
@@ -275,5 +233,5 @@ declare module "next-auth" {
   }
 }
 declare module "@auth/core/adapters" {
-  interface AdapterUser extends TSelectUser { }
+  interface AdapterUser extends TSelectUser {}
 }

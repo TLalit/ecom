@@ -9,10 +9,10 @@ export default function Settings() {
         <p>Manage the general settings for your store</p>
       </section>
       <section>
-        <Link href={'/admin/settings/currencies'}>
+        <Link href={"/admin/settings/currencies"}>
           <Card className="mx-auto max-w-sm shadow-2xl">Currencies</Card>
         </Link>
-        <Link href={'/admin/settings/region'}>
+        <Link href={"/admin/settings/region"}>
           <Card className="mx-auto max-w-sm shadow-2xl">Region</Card>
         </Link>
       </section>

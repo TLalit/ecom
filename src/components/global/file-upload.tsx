@@ -1,12 +1,7 @@
 import { cn } from "@/lib/utils";
 import clsx from "clsx";
 import { forwardRef, HTMLAttributes, useCallback } from "react";
-import {
-  DropEvent,
-  DropzoneOptions,
-  FileRejection,
-  useDropzone,
-} from "react-dropzone";
+import { DropEvent, DropzoneOptions, FileRejection, useDropzone } from "react-dropzone";
 import { LucideIcon } from "../icons/icon";
 import { Card, CardContent, CardHeader } from "../ui/card";
 
@@ -41,15 +36,9 @@ const AcceptValues = {
   "application/x-rar-compressed": [".rar"],
   "application/x-tar": [".tar"],
   "application/x-7z-compressed": [".7z"],
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
-    ".docx",
-  ],
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
-    ".xlsx",
-  ],
-  "application/vnd.openxmlformats-officedocument.presentationml.presentation": [
-    ".pptx",
-  ],
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation": [".pptx"],
 };
 
 export const FileUploader = forwardRef<HTMLInputElement, Props>(
@@ -97,17 +86,12 @@ export const FileUploader = forwardRef<HTMLInputElement, Props>(
       return null;
     }
     return (
-      <Card
-        className={cn("flex flex-col overflow-hidden border-dashed", className)}
-      >
+      <Card className={cn("flex flex-col overflow-hidden border-dashed", className)}>
         <CardContent
           {...getRootProps()}
-          className={clsx(
-            "flex flex-1 flex-col items-center justify-center gap-2",
-            {
-              "bg-accent": isDragActive,
-            },
-          )}
+          className={clsx("flex flex-1 flex-col items-center justify-center gap-2", {
+            "bg-accent": isDragActive,
+          })}
         >
           <CardHeader>
             <LucideIcon

@@ -1,11 +1,5 @@
 import { isNull } from "drizzle-orm";
-import {
-  pgTable,
-  text,
-  timestamp,
-  uniqueIndex,
-  uuid,
-} from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 
 export const collectionTable = pgTable(
   "collection",
@@ -31,8 +25,6 @@ export const collectionTable = pgTable(
     }),
   },
   (collection) => ({
-    index: uniqueIndex()
-      .on(collection.slug)
-      .where(isNull(collection.archivedAt)),
+    index: uniqueIndex().on(collection.slug).where(isNull(collection.archivedAt)),
   }),
 );

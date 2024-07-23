@@ -9,5 +9,5 @@ export * from "./user";
 export * from "./user.relation";
 export * from "./userRole";
 export * from "./verificationToken";
-export * from "./country"
-export * from "./region"
+export * from "./country";
+export * from "./region";

@@ -2,10 +2,7 @@ import { accountTable, db, userTable } from "@/db";
 import { getFirst } from "@/lib/array.helpers";
 import { saltAndHashPassword } from "@/lib/password";
 import { respondError, respondJson } from "@/lib/server.helpers";
-import {
-  PostSignUpRequest,
-  PostSignUpResponse,
-} from "@/types/sign-up.api.types";
+import { PostSignUpRequest, PostSignUpResponse } from "@/types/sign-up.api.types";
 import { and, eq, isNull } from "drizzle-orm";
 import { z } from "zod";
 
@@ -31,9 +28,7 @@ export const POST = async (req: Request) => {
         .select()
         .from(userTable)
         .leftJoin(accountTable, eq(userTable.id, accountTable.userId))
-        .where(
-          and(eq(userTable.email, data.email), isNull(userTable.archivedAt)),
-        ),
+        .where(and(eq(userTable.email, data.email), isNull(userTable.archivedAt))),
     );
     if (user) {
       return respondError({

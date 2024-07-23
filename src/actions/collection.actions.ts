@@ -4,22 +4,15 @@ import { collectionTable, db, uploadTable } from "@/db";
 import { getFirst } from "@/lib/array.helpers";
 import { createMainUrl, createThumbnailUrl } from "@/lib/string.helper";
 import { StatusEnum, VisibilityEnum } from "@/types/collection.api.types";
-import {
-  CreateCollectionSchema,
-  EditCollectionSchema,
-} from "@/validators/collection.validators";
+import { CreateCollectionSchema, EditCollectionSchema } from "@/validators/collection.validators";
 import { and, count, eq, inArray, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { getPaginationValues } from "./action.helpers";
 import { PaginationParams } from "./action.types";
 
 export interface GetCollectionPayload extends PaginationParams {}
-export type GetCollectionActionResponse = Awaited<
-  ReturnType<typeof getCollectionAction>
->;
-export const getCollectionAction = async ({
-  ...paginationParams
-}: GetCollectionPayload = {}) => {
+export type GetCollectionActionResponse = Awaited<ReturnType<typeof getCollectionAction>>;
+export const getCollectionAction = async ({ ...paginationParams }: GetCollectionPayload = {}) => {
   const { page, limit, offset } = getPaginationValues(paginationParams);
   const visibilityArray = [VisibilityEnum.PUBLIC];
   const statusArray = [StatusEnum.ACTIVE];
@@ -70,10 +63,7 @@ export const getCollectionAction = async ({
     )
     .then((res) => res[0].total);
 
-  const [collections, totalCount] = await Promise.all([
-    getCollection,
-    getTotalCount,
-  ]);
+  const [collections, totalCount] = await Promise.all([getCollection, getTotalCount]);
 
   const collectionWithImageUrls = collections.map((collection) => ({
     ...collection,
@@ -152,9 +142,7 @@ export const getCollectionBySlugAction = async ({ slug }: { slug: string }) => {
   return collectionWithImageUrls;
 };
 
-export const createCollectionAction = async (
-  payload: z.infer<typeof CreateCollectionSchema>,
-) => {
+export const createCollectionAction = async (payload: z.infer<typeof CreateCollectionSchema>) => {
   const session = await auth();
 
   if (!session?.user?.roles.includes("admin")) {
@@ -184,14 +172,9 @@ export const deleteCollectionByIdAction = async ({ id }: { id: string }) => {
   if (!session?.user?.roles.includes("admin")) {
     throw new Error("Unauthorized");
   }
-  return await db
-    .delete(collectionTable)
-    .where(eq(collectionTable.id, id))
-    .returning({ id: collectionTable.id });
+  return await db.delete(collectionTable).where(eq(collectionTable.id, id)).returning({ id: collectionTable.id });
 };
-export const editCollectionAction = async (
-  payload: z.infer<typeof EditCollectionSchema>,
-) => {
+export const editCollectionAction = async (payload: z.infer<typeof EditCollectionSchema>) => {
   const session = await auth();
 
   if (!session?.user?.roles.includes("admin")) {

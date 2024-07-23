@@ -13,16 +13,9 @@ export default async function RootLayout({
   }
   return (
     <main className="relative flex min-h-screen flex-row">
-      <div className="z-10 flex flex-1 flex-col items-center justify-center p-4">
-        {children}
-      </div>
+      <div className="z-10 flex flex-1 flex-col items-center justify-center p-4">{children}</div>
       {/* <div className="absolute inset-0 -z-10 flex-1 bg-gray-100 lg:relative"> */}
-      <Image
-        src="https://picsum.photos/1200/800"
-        fill
-        className="object-cover"
-        alt="Background"
-      />
+      <Image src="https://picsum.photos/1200/800" fill className="object-cover" alt="Background" />
       {/* </div> */}
     </main>
   );

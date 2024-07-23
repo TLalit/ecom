@@ -11,9 +11,7 @@ const LoadingButton = React.forwardRef<HTMLButtonElement, LoadingButtonProps>(
   ({ loading, ...props }: LoadingButtonProps, ref) => {
     return (
       <Button ref={ref} {...props} disabled={props?.disabled || loading}>
-        {loading && (
-          <LucideIcon name="LoaderCircle" className="absolute animate-spin" />
-        )}
+        {loading && <LucideIcon name="Loader" className="absolute animate-spin" />}
         <span className={clsx({ invisible: loading })}>{props.children}</span>
       </Button>
     );

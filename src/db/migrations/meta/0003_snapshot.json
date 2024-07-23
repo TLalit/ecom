@@ -1,6 +1,6 @@
 {
-  "id": "099ded8e-7246-4903-8ebf-fbc4d2576506",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "3d250dd1-50d8-421e-9701-f7792744cb5d",
+  "prevId": "cac359c6-770a-48a8-ad3e-7de15619341c",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -276,6 +276,54 @@
         }
       }
     },
+    "public.country": {
+      "name": "country",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "region_id": {
+          "name": "region_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.currency": {
       "name": "currency",
       "schema": "",
@@ -353,11 +401,6 @@
           "name": "currency_name_unique",
           "nullsNotDistinct": false,
           "columns": ["name"]
-        },
-        "currency_symbol_unique": {
-          "name": "currency_symbol_unique",
-          "nullsNotDistinct": false,
-          "columns": ["symbol"]
         }
       }
     },
@@ -606,6 +649,48 @@
           "columns": ["identifier", "token"]
         }
       },
+      "uniqueConstraints": {}
+    },
+    "public.region": {
+      "name": "region",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "region": {
+          "name": "region",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "currency_id": {
+          "name": "currency_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     }
   },

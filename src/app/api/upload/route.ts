@@ -1,16 +1,8 @@
 import { auth } from "@/auth";
 import { db, uploadTable } from "@/db";
 import { UploadFileToS3 } from "@/lib/aws-s3";
-import {
-  respondError,
-  respondJson,
-  respondUnauthorizedError,
-} from "@/lib/server.helpers";
-import {
-  addThumbnailPrefix,
-  createMainUrl,
-  createThumbnailUrl,
-} from "@/lib/string.helper";
+import { respondError, respondJson, respondUnauthorizedError } from "@/lib/server.helpers";
+import { addThumbnailPrefix, createMainUrl, createThumbnailUrl } from "@/lib/string.helper";
 import { PostUploadRequest, PostUploadResponse } from "@/types/upload.api.type";
 
 import sharp from "sharp";
@@ -26,12 +18,8 @@ export const POST = auth(async (req) => {
     const fileName = `${entityType}/${assetType}-${Date.now()}.webp`;
     const compressedFile = await compressAndConvertFile(file, fileName);
     const thumbnailFile = await createThumbnail(compressedFile, fileName);
-    const [compressed] = await Promise.all([
-      UploadFileToS3(compressedFile),
-      UploadFileToS3(thumbnailFile),
-    ]);
-    if (!compressed.Key)
-      return respondError({ message: "Error uploading file", status: 500 });
+    const [compressed] = await Promise.all([UploadFileToS3(compressedFile), UploadFileToS3(thumbnailFile)]);
+    if (!compressed.Key) return respondError({ message: "Error uploading file", status: 500 });
     const { id, path } = await db
       .insert(uploadTable)
       .values({
@@ -63,9 +51,7 @@ const parseFormData = async (req: any) => {
   const formData = await req.formData();
   const file = formData.get("file") as File;
   const assetType = formData.get("assetType") as PostUploadRequest["assetType"];
-  const entityType = formData.get(
-    "entityType",
-  ) as PostUploadRequest["entityType"];
+  const entityType = formData.get("entityType") as PostUploadRequest["entityType"];
   return { file, assetType, entityType };
 };
 
@@ -81,14 +67,10 @@ const createThumbnail = async (file: File, fileName: string) => {
     })
     .toBuffer();
 
-  const compressedFile = new File(
-    [new Uint8Array(thumbnailFileBuffer)],
-    addThumbnailPrefix(fileName),
-    {
-      type: file.type,
-      lastModified: Date.now(),
-    },
-  );
+  const compressedFile = new File([new Uint8Array(thumbnailFileBuffer)], addThumbnailPrefix(fileName), {
+    type: file.type,
+    lastModified: Date.now(),
+  });
   return compressedFile;
 };
 
@@ -100,13 +82,9 @@ const compressAndConvertFile = async (file: File, fileName: string) => {
       quality: 80,
     })
     .toBuffer();
-  const compressedFile = new File(
-    [new Uint8Array(compressedFileBuffer)],
-    fileName,
-    {
-      type: file.type,
-      lastModified: Date.now(),
-    },
-  );
+  const compressedFile = new File([new Uint8Array(compressedFileBuffer)], fileName, {
+    type: file.type,
+    lastModified: Date.now(),
+  });
   return compressedFile;
 };

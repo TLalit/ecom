@@ -1,17 +1,11 @@
 "use server";
 import { auth } from "@/auth";
 import { currencyTable, db } from "@/db";
-import {
-  AvailableCurrencySchema,
-  DefaultCurrencySchema,
-  EditCurrencySchema,
-} from "@/validators/currency.validators";
+import { AvailableCurrencySchema, DefaultCurrencySchema, EditCurrencySchema } from "@/validators/currency.validators";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
-export type GetCurrencyActionResponse = Awaited<
-  ReturnType<typeof getCurrencyAction>
->;
+export type GetCurrencyActionResponse = Awaited<ReturnType<typeof getCurrencyAction>>;
 
 export const getCurrencyAction = async () => {
   const session = await auth();
@@ -37,9 +31,7 @@ export const getCurrencyAction = async () => {
   };
 };
 
-export const createAvailableCurrencyAction = async (
-  payload: z.infer<typeof AvailableCurrencySchema>,
-) => {
+export const createAvailableCurrencyAction = async (payload: z.infer<typeof AvailableCurrencySchema>) => {
   const session = await auth();
 
   if (!session?.user?.roles.includes("admin")) {
@@ -72,9 +64,7 @@ export const createAvailableCurrencyAction = async (
   return await Promise.all(availableCurrencyMap);
 };
 
-export const deleteAvailableCurrencyAction = async (
-  payload: z.infer<typeof DefaultCurrencySchema>,
-) => {
+export const deleteAvailableCurrencyAction = async (payload: z.infer<typeof DefaultCurrencySchema>) => {
   const session = await auth();
 
   if (!session?.user?.roles.includes("admin")) {
@@ -100,9 +90,7 @@ export const deleteAvailableCurrencyAction = async (
     .returning({ id: currencyTable.id });
 };
 
-export const updateDefaultCurrencyAction = async (
-  payload: z.infer<typeof DefaultCurrencySchema>,
-) => {
+export const updateDefaultCurrencyAction = async (payload: z.infer<typeof DefaultCurrencySchema>) => {
   const session = await auth();
 
   if (!session?.user?.roles.includes("admin")) {
@@ -117,32 +105,29 @@ export const updateDefaultCurrencyAction = async (
     });
   }
 
-  return await db
-    .transaction(async (tx) => {
-      await tx
-        .update(currencyTable)
-        .set({
-          isDefault: false,
-          updatedAt: new Date(),
-          updatedBy: session.user.id,
-        })
-        .where(eq(currencyTable.isDefault, true));
+  return await db.transaction(async (tx) => {
+    await tx
+      .update(currencyTable)
+      .set({
+        isDefault: false,
+        updatedAt: new Date(),
+        updatedBy: session.user.id,
+      })
+      .where(eq(currencyTable.isDefault, true));
 
-      await tx
-        .update(currencyTable)
-        .set({
-          isDefault: true,
-          updatedAt: new Date(),
-          updatedBy: session.user.id,
-        })
-        .where(eq(currencyTable.id, data.currencyId))
-        .returning({ id: currencyTable.id });
-    })
+    await tx
+      .update(currencyTable)
+      .set({
+        isDefault: true,
+        updatedAt: new Date(),
+        updatedBy: session.user.id,
+      })
+      .where(eq(currencyTable.id, data.currencyId))
+      .returning({ id: currencyTable.id });
+  });
 };
 
-export const editAvailableCurrencyActions = async (
-  payload: z.infer<typeof EditCurrencySchema>,
-) => {
+export const editAvailableCurrencyActions = async (payload: z.infer<typeof EditCurrencySchema>) => {
   const session = await auth();
 
   if (!session?.user?.roles.includes("admin")) {

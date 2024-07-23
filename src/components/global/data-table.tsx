@@ -1,12 +1,5 @@
 "use client";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useQueryParams } from "@/hooks/useQueryParams";
 import { cn } from "@/lib/utils";
 import {
@@ -54,10 +47,7 @@ export function DataTable<TData extends DataTableState, TValue>({
   searchKey = "search",
 }: DataTableProps<TData, TValue>) {
   const { searchParams, setSearchParams } = useQueryParams();
-  const searchValue = useMemo(
-    () => searchParams?.get(searchKey) ?? "",
-    [searchKey, searchParams],
-  );
+  const searchValue = useMemo(() => searchParams?.get(searchKey) ?? "", [searchKey, searchParams]);
 
   const sorting: SortingState = useMemo(
     () => [
@@ -119,9 +109,7 @@ export function DataTable<TData extends DataTableState, TValue>({
       }
 
       if (typeof rowSelectionState === "function") {
-        const newSortingState = rowSelectionState(
-          multiRowSelection ? rowSelection : {},
-        );
+        const newSortingState = rowSelectionState(multiRowSelection ? rowSelection : {});
         finalState = {
           [rowSelectionKey]: Object.keys(newSortingState).join(","),
         };
@@ -168,17 +156,13 @@ export function DataTable<TData extends DataTableState, TValue>({
                 return (
                   <TableHead key={header.id} className="px-2">
                     <div className="flex items-center justify-between gap-2">
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, context)}
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, context)}
                       {enableSorting && (
                         <Button
                           size="icon"
                           variant="outline"
                           className="size-6"
-                          onClick={() =>
-                            context.column.toggleSorting(isSortingAsc)
-                          }
+                          onClick={() => context.column.toggleSorting(isSortingAsc)}
                         >
                           <LucideIcon
                             name="ChevronDown"
@@ -201,10 +185,7 @@ export function DataTable<TData extends DataTableState, TValue>({
               .fill(null)
               .map((_, idx) => (
                 <TableRow key={idx}>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="text-left text-gray-500"
-                  >
+                  <TableCell colSpan={columns.length} className="text-left text-gray-500">
                     <Progress />
                   </TableCell>
                 </TableRow>
@@ -231,10 +212,7 @@ export function DataTable<TData extends DataTableState, TValue>({
             ))
           ) : (
             <TableRow>
-              <TableCell
-                colSpan={columns.length}
-                className="h-24 text-left text-gray-500"
-              >
+              <TableCell colSpan={columns.length} className="h-24 text-left text-gray-500">
                 No results.
               </TableCell>
             </TableRow>

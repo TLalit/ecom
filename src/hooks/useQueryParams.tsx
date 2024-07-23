@@ -5,10 +5,7 @@ import { useCallback } from "react";
 export const useQueryParams = () => {
   const searchParams = useSearchParams();
   const setSearchParams = useCallback(
-    (
-      params: URLSearchParams | Record<string, string>,
-      options: { replace?: boolean } = { replace: true },
-    ) => {
+    (params: URLSearchParams | Record<string, string>, options: { replace?: boolean } = { replace: true }) => {
       if (searchParams === null) {
         return;
       }
@@ -43,9 +40,10 @@ export const useQueryParams = () => {
       if (searchParams === null) {
         return;
       }
-      const currentParamsObj: Record<string, string> = Array.from(
-        searchParams.entries(),
-      ).reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+      const currentParamsObj: Record<string, string> = Array.from(searchParams.entries()).reduce(
+        (acc, [key, value]) => ({ ...acc, [key]: value }),
+        {},
+      );
       delete currentParamsObj[key];
 
       const paramsString = new URLSearchParams(currentParamsObj);

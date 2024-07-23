@@ -3,8 +3,7 @@ import { AxiosError } from "axios";
 import { toast } from "sonner";
 
 export const errorHandler =
-  (callback?: (args: { message?: string }) => void) =>
-  (error: AxiosError<GenericErrorResponse> | Error) => {
+  (callback?: (args: { message?: string }) => void) => (error: AxiosError<GenericErrorResponse> | Error) => {
     if ("response" in error) {
       if (callback) {
         callback({

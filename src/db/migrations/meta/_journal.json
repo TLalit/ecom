@@ -22,6 +22,13 @@
       "when": 1720608377932,
       "tag": "0002_dizzy_wind_dancer",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1721731107138,
+      "tag": "0003_serious_queen_noir",
+      "breakpoints": true
     }
   ]
 }

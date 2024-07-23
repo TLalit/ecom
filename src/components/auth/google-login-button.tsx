@@ -7,11 +7,7 @@ export function SignInWithGoogle() {
   const { signInWithGoogle } = useAuth();
 
   return (
-    <Button
-      variant="outline"
-      className="w-full gap-2"
-      onClick={signInWithGoogle}
-    >
+    <Button variant="outline" className="w-full gap-2" onClick={signInWithGoogle}>
       <IconGoogleLogo className="size-4" />
       <span> Login with Google</span>
     </Button>

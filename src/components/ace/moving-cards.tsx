@@ -43,15 +43,9 @@ export const MovingCards = ({
   const getDirection = () => {
     if (containerRef.current) {
       if (direction === "left") {
-        containerRef.current.style.setProperty(
-          "--animation-direction",
-          "forwards",
-        );
+        containerRef.current.style.setProperty("--animation-direction", "forwards");
       } else {
-        containerRef.current.style.setProperty(
-          "--animation-direction",
-          "reverse",
-        );
+        containerRef.current.style.setProperty("--animation-direction", "reverse");
       }
     }
   };
@@ -68,10 +62,7 @@ export const MovingCards = ({
   };
 
   return (
-    <div
-      ref={containerRef}
-      className={cn("scroller relative z-20 overflow-hidden", className)}
-    >
+    <div ref={containerRef} className={cn("scroller relative z-20 overflow-hidden", className)}>
       <ul
         ref={scrollerRef}
         className={cn(

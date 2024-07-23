@@ -2,8 +2,7 @@ import { cn } from "@/lib/utils";
 import { LucideProps } from "lucide-react";
 import * as React from "react";
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   startIcon?: (props: LucideProps) => React.ReactNode;
   endIcon?: (props: LucideProps) => React.ReactNode;
 }

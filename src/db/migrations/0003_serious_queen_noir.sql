@@ -1,0 +1,1 @@
+ALTER TABLE "currency" DROP CONSTRAINT "currency_symbol_unique";

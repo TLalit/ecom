@@ -1,12 +1,5 @@
 "use client";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
@@ -29,9 +22,7 @@ export const ProductCard = ({
         </CardHeader>
         <CardContent>
           <CardTitle className="text-xl font-bold">{product.name}</CardTitle>
-          <CardDescription className="line-clamp-1">
-            {product.description}
-          </CardDescription>
+          <CardDescription className="line-clamp-1">{product.description}</CardDescription>
         </CardContent>
         <CardFooter className="flex justify-between gap-4">
           <span className="text-lg font-bold">$99.99</span>

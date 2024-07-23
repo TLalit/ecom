@@ -19,31 +19,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { LoadingButton } from "@/components/ui/loading-button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Sheet,
-  SheetContent,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { collectionStatusOptions, visibilityStatusOptions } from "@/constants";
 import { useFileUploadMutation } from "@/hooks/apiHooks";
@@ -58,49 +38,47 @@ import { PropsWithChildren, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-const columns: DataTableProps<
-  GetCollectionActionResponse["collections"][0]
->["columns"] = [
-    { header: "Title", accessorKey: "title", enableSorting: true },
-    {
-      header: "Slug",
-      accessorKey: "slug",
-      enableSorting: true,
+const columns: DataTableProps<GetCollectionActionResponse["collections"][0]>["columns"] = [
+  { header: "Title", accessorKey: "title", enableSorting: true },
+  {
+    header: "Slug",
+    accessorKey: "slug",
+    enableSorting: true,
+  },
+  {
+    header: "Status",
+    accessorKey: "status",
+  },
+  {
+    header: "Visibility",
+    accessorKey: "visibility",
+  },
+  {
+    header: "Image",
+    accessorKey: "image",
+    cell: ({ row }) => {
+      return row.original.image ? (
+        <ImageList
+          images={[
+            {
+              src: row.original.image.thumbnailUrl,
+              width: 40,
+              height: 40,
+              className: "aspect-square",
+            },
+          ]}
+        />
+      ) : null;
     },
-    {
-      header: "Status",
-      accessorKey: "status",
+  },
+  {
+    header: "Actions",
+    accessorKey: "id",
+    cell: ({ row }) => {
+      return <ActionsDropdown row={row} />;
     },
-    {
-      header: "Visibility",
-      accessorKey: "visibility",
-    },
-    {
-      header: "Image",
-      accessorKey: "image",
-      cell: ({ row }) => {
-        return row.original.image ? (
-          <ImageList
-            images={[
-              {
-                src: row.original.image.thumbnailUrl,
-                width: 40,
-                height: 40,
-                className: "aspect-square",
-              },
-            ]}
-          />
-        ) : null;
-      },
-    },
-    {
-      header: "Actions",
-      accessorKey: "id",
-      cell: ({ row }) => {
-        return <ActionsDropdown row={row} />;
-      },
-    },
-  ];
+  },
+];
 export default function Page() {
   const { data, isFetching } = useQuery({
     queryKey: ["getCollectionAction"],
@@ -119,11 +97,7 @@ export default function Page() {
           </SheetTrigger>
         </CreateUpdateCollectionSheet>
       </section>
-      <DataTable
-        loading={isFetching}
-        columns={columns}
-        data={data?.collections}
-      />
+      <DataTable loading={isFetching} columns={columns} data={data?.collections} />
     </main>
   );
 }
@@ -338,17 +312,11 @@ export const CreateUpdateCollectionSheet = ({
                     <FormLabel>Image</FormLabel>
                     <FormControl>
                       <div className="flex gap-5">
-                        <FileUploader
-                          {...field}
-                          className="size-60"
-                          hideOnSelect
-                        />
+                        <FileUploader {...field} className="size-60" hideOnSelect />
                         <ImageList
                           images={previewFiles}
                           onRemove={({ src }) => {
-                            field.onChange(
-                              field.value.filter((item) => item.url !== src),
-                            );
+                            field.onChange(field.value.filter((item) => item.url !== src));
                           }}
                         />
                       </div>
@@ -362,11 +330,7 @@ export const CreateUpdateCollectionSheet = ({
               <Button type="button" variant="outline" className="flex-1">
                 Cancel
               </Button>
-              <LoadingButton
-                type="submit"
-                className="flex-1"
-                loading={form.formState.isSubmitting}
-              >
+              <LoadingButton type="submit" className="flex-1" loading={form.formState.isSubmitting}>
                 {mode}
               </LoadingButton>
             </SheetFooter>
@@ -377,11 +341,7 @@ export const CreateUpdateCollectionSheet = ({
   );
 };
 
-const ActionsDropdown = ({
-  row,
-}: {
-  row: Row<GetCollectionActionResponse["collections"][0]>;
-}) => {
+const ActionsDropdown = ({ row }: { row: Row<GetCollectionActionResponse["collections"][0]> }) => {
   const queryClient = useQueryClient();
 
   const deleteCollection = useMutation({
@@ -426,11 +386,7 @@ const ActionsDropdown = ({
           <DropdownMenuSeparator />
           <DropdownMenuItem
             destructive
-            onClick={() =>
-              confirmBeforeAction(() =>
-                deleteCollection.mutateAsync({ id: row.original.id }),
-              )
-            }
+            onClick={() => confirmBeforeAction(() => deleteCollection.mutateAsync({ id: row.original.id }))}
           >
             <LucideIcon name="Trash" />
             <span>Delete</span>

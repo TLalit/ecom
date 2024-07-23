@@ -1,12 +1,5 @@
 import {} from "drizzle-orm/mysql-core";
-import {
-  boolean,
-  integer,
-  pgTable,
-  primaryKey,
-  text,
-  uuid,
-} from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, primaryKey, text, uuid } from "drizzle-orm/pg-core";
 import { userTable } from "./user";
 
 export const authenticatorTable = pgTable(

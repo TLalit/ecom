@@ -1,11 +1,5 @@
 import { isNull } from "drizzle-orm";
-import {
-  pgTable,
-  text,
-  timestamp,
-  uniqueIndex,
-  uuid,
-} from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 
 export const userTable = pgTable(
   "user",
@@ -31,9 +25,7 @@ export const userTable = pgTable(
     }),
   },
   (userTable) => ({
-    index: uniqueIndex()
-      .on(userTable.email)
-      .where(isNull(userTable.archivedAt)),
+    index: uniqueIndex().on(userTable.email).where(isNull(userTable.archivedAt)),
   }),
 );
 export type TSelectUser = typeof userTable.$inferSelect & { roles?: string[] };

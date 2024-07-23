@@ -2,22 +2,14 @@ import Link from "next/link";
 
 import { SignInWithGoogle } from "@/components/auth/google-login-button";
 import { SingUpForm } from "@/components/auth/sign-up-form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Register() {
   return (
     <Card className="mx-auto max-w-sm shadow-2xl">
       <CardHeader>
         <CardTitle className="text-xl">Sign Up</CardTitle>
-        <CardDescription>
-          Enter your information to create an account
-        </CardDescription>
+        <CardDescription>Enter your information to create an account</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-4">

@@ -36,10 +36,7 @@ export const WobbleCard = ({
           : "translate3d(0px, 0px, 0) scale3d(1, 1, 1)",
         transition: "transform 0.1s ease-out",
       }}
-      className={cn(
-        "relative mx-auto w-full overflow-hidden rounded-2xl bg-indigo-800",
-        containerClassName,
-      )}
+      className={cn("relative mx-auto w-full overflow-hidden rounded-2xl bg-indigo-800", containerClassName)}
     >
       <div
         className="relative h-full overflow-hidden [background-image:radial-gradient(88%_100%_at_top,rgba(255,255,255,0.5),rgba(255,255,255,0))] sm:mx-0 sm:rounded-2xl"

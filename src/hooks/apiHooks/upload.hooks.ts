@@ -11,15 +11,11 @@ export const useFileUploadMutation = () =>
       formData.append("file", file);
       formData.append("assetType", assetType);
       formData.append("entityType", entityType);
-      const res = await axios.post<PostUploadResponse>(
-        "/api/upload",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      const res = await axios.post<PostUploadResponse>("/api/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
       return res.data;
     },
   });

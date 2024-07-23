@@ -18,27 +18,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HTMLAttributes } from "react";
 
-export const UserMenu = ({
-  className,
-  ...rest
-}: HTMLAttributes<HTMLDivElement>) => {
+export const UserMenu = ({ className, ...rest }: HTMLAttributes<HTMLDivElement>) => {
   const pathName = usePathname();
   const { user, status, signOut } = useAuth();
   if (status === "loading") return null;
   return (
-    <div
-      className={cn("flex flex-1 items-center justify-end gap-2", className)}
-      {...rest}
-    >
+    <div className={cn("flex flex-1 items-center justify-end gap-2", className)} {...rest}>
       {user ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="secondary" size="icon" className="rounded-full">
               <Avatar>
-                <AvatarImage
-                  src={user?.profilePicture ?? undefined}
-                  alt={user?.email ?? ""}
-                />
+                <AvatarImage src={user?.profilePicture ?? undefined} alt={user?.email ?? ""} />
                 <AvatarFallback>
                   <CircleUser className="h-5 w-5" />
                 </AvatarFallback>
@@ -93,9 +84,7 @@ export const UserMenu = ({
           </Button>
           <Separator orientation="vertical" className="h-6" />
           <Button asChild>
-            <Link href={`/register?callbackUrl=${pathName}`}>
-              Create Account
-            </Link>
+            <Link href={`/register?callbackUrl=${pathName}`}>Create Account</Link>
           </Button>
         </>
       )}

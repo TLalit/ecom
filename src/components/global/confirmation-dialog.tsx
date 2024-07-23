@@ -33,9 +33,7 @@ const initialState = {
   description: `This action cannot be undone.`,
   onConfirm: async () => {},
 };
-const useConfirmationStore = create<IConfirmationDialog>(
-  (set, get) => initialState,
-);
+const useConfirmationStore = create<IConfirmationDialog>((set, get) => initialState);
 export const confirmBeforeAction = (
   onConfirm: IConfirmationDialog["onConfirm"],
   options?: Omit<IConfirmationDialog, "onConfirm" | "isOpen">,
@@ -48,15 +46,7 @@ export const confirmBeforeAction = (
 };
 
 export const ConfirmationDialog = () => {
-  const {
-    confirmText,
-    title,
-    description,
-    severity,
-    confirmIcon,
-    onConfirm,
-    isOpen,
-  } = useConfirmationStore();
+  const { confirmText, title, description, severity, confirmIcon, onConfirm, isOpen } = useConfirmationStore();
 
   const confirmMutation = useMutation({
     mutationKey: ["confirmMutation"],
@@ -88,14 +78,10 @@ export const ConfirmationDialog = () => {
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
-          {description && (
-            <AlertDialogDescription>{description}</AlertDialogDescription>
-          )}
+          {description && <AlertDialogDescription>{description}</AlertDialogDescription>}
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => onOpenChange(false)}>
-            Cancel
-          </AlertDialogCancel>
+          <AlertDialogCancel onClick={() => onOpenChange(false)}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={() => confirmMutation.mutate()}
             className={cn(
@@ -106,10 +92,7 @@ export const ConfirmationDialog = () => {
           >
             {confirmIcon && <LucideIcon name={confirmIcon} />}
             {confirmMutation.isPending ? (
-              <LucideIcon
-                name="LoaderCircle"
-                className="absolute animate-spin"
-              />
+              <LucideIcon name="LoaderCircle" className="absolute animate-spin" />
             ) : (
               <span>{confirmText}</span>
             )}

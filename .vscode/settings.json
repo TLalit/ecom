@@ -1,8 +1,5 @@
 {
-  "typescript.preferences.autoImportFileExcludePatterns": [
-    "**/node_modules/next/router",
-    "@radix-ui"
-  ],
+  "typescript.preferences.autoImportFileExcludePatterns": ["**/node_modules/next/router", "@radix-ui"],
   "cSpell.enabled": true,
   "cSpell.words": ["hookform", "Lucide", "sonner", "tanstack", "vallidators"]
 }
