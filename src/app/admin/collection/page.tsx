@@ -49,16 +49,15 @@ import { collectionStatusOptions, visibilityStatusOptions } from "@/constants";
 import { useFileUploadMutation } from "@/hooks/apiHooks";
 import { errorHandler } from "@/lib/query.helper";
 import { generateSlug } from "@/lib/string.helper";
-import { StatusEnum, VisibilityEnum } from "@/types/collection.api.types";
+import { StatusEnum } from "@/types/collection.api.types";
 import { CreateCollectionSchema } from "@/validators/collection.validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Row } from "@tanstack/react-table";
 import { PropsWithChildren, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Row } from "@tanstack/react-table";
-import { File } from "buffer";
 const columns: DataTableProps<
   GetCollectionActionResponse["collections"][0]
 >["columns"] = [

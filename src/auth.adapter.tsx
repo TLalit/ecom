@@ -275,5 +275,5 @@ declare module "next-auth" {
   }
 }
 declare module "@auth/core/adapters" {
-  interface AdapterUser extends TSelectUser {}
+  interface AdapterUser extends TSelectUser { }
 }

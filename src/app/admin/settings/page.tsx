@@ -1,8 +1,5 @@
-import { SheetTrigger } from "@/components/ui/sheet";
-import { CreateUpdateCollectionSheet } from "../collection/page";
-import { Button } from "@/components/ui/button";
-import { LucideIcon } from "@/components/icons/icon";
 import { Card } from "@/components/ui/card";
+import Link from "next/link";
 
 export default function Settings() {
   return (
@@ -12,7 +9,12 @@ export default function Settings() {
         <p>Manage the general settings for your store</p>
       </section>
       <section>
-        <Card className="mx-auto max-w-sm shadow-2xl">Currencies</Card>
+        <Link href={'/admin/settings/currencies'}>
+          <Card className="mx-auto max-w-sm shadow-2xl">Currencies</Card>
+        </Link>
+        <Link href={'/admin/settings/region'}>
+          <Card className="mx-auto max-w-sm shadow-2xl">Region</Card>
+        </Link>
       </section>
     </main>
   );
