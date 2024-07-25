@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { CountryTable, currencyTable, db } from "@/db";
+import { CountryTable, CurrencyTable, db } from "@/db";
 import Countries from "./country.json";
 import Currencies from "./currency.json";
 
@@ -30,7 +30,7 @@ export async function seedCurrencies() {
   }
 
   const res = await db
-    .insert(currencyTable)
+    .insert(CurrencyTable)
     .values(
       Currencies.map((item) => ({
         symbol: item.symbol,
@@ -41,6 +41,6 @@ export async function seedCurrencies() {
         isAvailable: false,
       })),
     )
-    .returning({ id: currencyTable.id });
+    .returning({ id: CurrencyTable.id });
   return { currenciesCreated: res.length };
 }

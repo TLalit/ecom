@@ -1,9 +1,9 @@
 import { pgTable, text, uuid } from "drizzle-orm/pg-core";
-import { userTable } from "./user";
+import { UserTable } from "./user";
 
-export const userRoleTable = pgTable("user_role", {
+export const UserRoleTable = pgTable("user_role", {
   userId: uuid("user_id")
     .notNull()
-    .references(() => userTable.id, { onDelete: "cascade" }),
+    .references(() => UserTable.id, { onDelete: "cascade" }),
   role: text("role").notNull(),
 });

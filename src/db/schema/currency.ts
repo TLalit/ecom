@@ -1,6 +1,6 @@
 import { boolean, integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-export const currencyTable = pgTable("currency", {
+export const CurrencyTable = pgTable("currency", {
   id: uuid("id").defaultRandom().notNull().primaryKey(),
   name: text("name").notNull().unique(),
   symbol: text("symbol").notNull(),

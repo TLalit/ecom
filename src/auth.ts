@@ -8,7 +8,7 @@ import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { authAdapter } from "./auth.adapter";
 import { db } from "./db";
-import { userRoleTable, userTable } from "./db/schema";
+import { UserRoleTable, UserTable } from "./db/schema";
 export const { auth, handlers, signIn, signOut } = NextAuth({
   pages: {
     signIn: "/login",
@@ -43,17 +43,17 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         const user = await getFirst(
           db
             .select({
-              id: userTable.id,
-              name: userTable.name,
-              email: userTable.email,
-              password: userTable.password,
-              profilePicture: userTable.profilePicture,
+              id: UserTable.id,
+              name: UserTable.name,
+              email: UserTable.email,
+              password: UserTable.password,
+              profilePicture: UserTable.profilePicture,
               roles: sql<string[]>`json_agg(role)`,
             })
-            .from(userTable)
-            .leftJoin(userRoleTable, eq(userTable.id, userRoleTable.userId))
-            .where(eq(userTable.email, data.email))
-            .groupBy(userTable.id),
+            .from(UserTable)
+            .leftJoin(UserRoleTable, eq(UserTable.id, UserRoleTable.userId))
+            .where(eq(UserTable.email, data.email))
+            .groupBy(UserTable.id),
         );
 
         if (!user) {

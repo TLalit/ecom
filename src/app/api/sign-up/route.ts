@@ -1,4 +1,4 @@
-import { accountTable, db, userTable } from "@/db";
+import { AccountTable, db, UserTable } from "@/db";
 import { getFirst } from "@/lib/array.helpers";
 import { saltAndHashPassword } from "@/lib/password";
 import { respondError, respondJson } from "@/lib/server.helpers";
@@ -26,9 +26,9 @@ export const POST = async (req: Request) => {
     const user = await getFirst(
       db
         .select()
-        .from(userTable)
-        .leftJoin(accountTable, eq(userTable.id, accountTable.userId))
-        .where(and(eq(userTable.email, data.email), isNull(userTable.archivedAt))),
+        .from(UserTable)
+        .leftJoin(AccountTable, eq(UserTable.id, AccountTable.userId))
+        .where(and(eq(UserTable.email, data.email), isNull(UserTable.archivedAt))),
     );
     if (user) {
       return respondError({
@@ -37,15 +37,15 @@ export const POST = async (req: Request) => {
       });
     }
     const [createdUser] = await db
-      .insert(userTable)
+      .insert(UserTable)
       .values({
         email: data.email,
         name: data.name,
         password: saltAndHashPassword(data.password),
       })
       .returning({
-        email: userTable.email,
-        name: userTable.name,
+        email: UserTable.email,
+        name: UserTable.name,
       });
 
     return respondJson<PostSignUpResponse>({

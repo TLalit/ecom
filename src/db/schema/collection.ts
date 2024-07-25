@@ -1,7 +1,7 @@
 import { isNull } from "drizzle-orm";
 import { pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 
-export const collectionTable = pgTable(
+export const CollectionTable = pgTable(
   "collection",
   {
     id: uuid("id").defaultRandom().notNull().primaryKey(),

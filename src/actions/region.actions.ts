@@ -1,6 +1,6 @@
 "use server";
 import { auth } from "@/auth";
-import { CountryTable, currencyTable, db, RegionTable } from "@/db";
+import { CountryTable, CurrencyTable, db, RegionTable } from "@/db";
 import { createUpdateCountriesAction } from "@/db/helpers/country";
 import { CreateRegionSchema, DeleteRegionSchema, EditRegionSchema } from "@/validators/region.validators";
 import { eq, sql } from "drizzle-orm";
@@ -35,10 +35,10 @@ export const fetchRegionsAction = async () => {
           symbol: string;
           value: number;
         }[]
-      >`COALESCE(json_agg(${currencyTable}),'[]')`,
+      >`COALESCE(json_agg(${CurrencyTable}),'[]')`,
     })
     .from(RegionTable)
-    .leftJoin(currencyTable, eq(RegionTable.currencyId, currencyTable.id))
+    .leftJoin(CurrencyTable, eq(RegionTable.currencyId, CurrencyTable.id))
     .leftJoin(CountryTable, eq(RegionTable.id, CountryTable.regionId))
     .groupBy(RegionTable.id);
   return {

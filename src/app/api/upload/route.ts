@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { db, uploadTable } from "@/db";
+import { db, UploadTable } from "@/db";
 import { UploadFileToS3 } from "@/lib/aws-s3";
 import { respondError, respondJson, respondUnauthorizedError } from "@/lib/server.helpers";
 import { addThumbnailPrefix, createMainUrl, createThumbnailUrl } from "@/lib/string.helper";
@@ -21,7 +21,7 @@ export const POST = auth(async (req) => {
     const [compressed] = await Promise.all([UploadFileToS3(compressedFile), UploadFileToS3(thumbnailFile)]);
     if (!compressed.Key) return respondError({ message: "Error uploading file", status: 500 });
     const { id, path } = await db
-      .insert(uploadTable)
+      .insert(UploadTable)
       .values({
         assetType,
         entityType,
@@ -29,8 +29,8 @@ export const POST = auth(async (req) => {
         uploadedBy: user.id,
       })
       .returning({
-        id: uploadTable.id,
-        path: uploadTable.path,
+        id: UploadTable.id,
+        path: UploadTable.path,
       })
       .then((res) => res[0]);
     const data: PostUploadResponse = {

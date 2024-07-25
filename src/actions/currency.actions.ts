@@ -1,6 +1,6 @@
 "use server";
 import { auth } from "@/auth";
-import { currencyTable, db } from "@/db";
+import { CurrencyTable, db } from "@/db";
 import { AvailableCurrencySchema, DefaultCurrencySchema, EditCurrencySchema } from "@/validators/currency.validators";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
@@ -15,15 +15,15 @@ export const getCurrencyAction = async () => {
 
   const currencies = await db
     .select({
-      id: currencyTable.id,
-      name: currencyTable.name,
-      symbol: currencyTable.symbol,
-      code: currencyTable.code,
-      value: currencyTable.value,
-      isDefault: currencyTable.isDefault,
-      isAvailable: currencyTable.isAvailable,
+      id: CurrencyTable.id,
+      name: CurrencyTable.name,
+      symbol: CurrencyTable.symbol,
+      code: CurrencyTable.code,
+      value: CurrencyTable.value,
+      isDefault: CurrencyTable.isDefault,
+      isAvailable: CurrencyTable.isAvailable,
     })
-    .from(currencyTable);
+    .from(CurrencyTable);
 
   return {
     currencies,
@@ -47,14 +47,14 @@ export const createAvailableCurrencyAction = async (payload: z.infer<typeof Avai
 
   const availableCurrencyMap = data.availableCurrencies.map((curr) => {
     const updateCurrency = db
-      .update(currencyTable)
+      .update(CurrencyTable)
       .set({
         isAvailable: true,
         value: curr.value,
         updatedAt: new Date(),
         updatedBy: session.user.id,
       })
-      .where(eq(currencyTable.id, curr.currencyId))
+      .where(eq(CurrencyTable.id, curr.currencyId))
       .returning()
       .then((res) => res[0].id);
 
@@ -80,14 +80,14 @@ export const deleteAvailableCurrencyAction = async (payload: z.infer<typeof Defa
   }
 
   return await db
-    .update(currencyTable)
+    .update(CurrencyTable)
     .set({
       isAvailable: false,
       updatedAt: new Date(),
       updatedBy: session.user.id,
     })
-    .where(eq(currencyTable.id, data.currencyId))
-    .returning({ id: currencyTable.id });
+    .where(eq(CurrencyTable.id, data.currencyId))
+    .returning({ id: CurrencyTable.id });
 };
 
 export const updateDefaultCurrencyAction = async (payload: z.infer<typeof DefaultCurrencySchema>) => {
@@ -107,23 +107,23 @@ export const updateDefaultCurrencyAction = async (payload: z.infer<typeof Defaul
 
   return await db.transaction(async (tx) => {
     await tx
-      .update(currencyTable)
+      .update(CurrencyTable)
       .set({
         isDefault: false,
         updatedAt: new Date(),
         updatedBy: session.user.id,
       })
-      .where(eq(currencyTable.isDefault, true));
+      .where(eq(CurrencyTable.isDefault, true));
 
     await tx
-      .update(currencyTable)
+      .update(CurrencyTable)
       .set({
         isDefault: true,
         updatedAt: new Date(),
         updatedBy: session.user.id,
       })
-      .where(eq(currencyTable.id, data.currencyId))
-      .returning({ id: currencyTable.id });
+      .where(eq(CurrencyTable.id, data.currencyId))
+      .returning({ id: CurrencyTable.id });
   });
 };
 
@@ -143,13 +143,13 @@ export const editAvailableCurrencyActions = async (payload: z.infer<typeof EditC
   }
 
   const { id } = await db
-    .update(currencyTable)
+    .update(CurrencyTable)
     .set({
       value: data.value,
       updatedAt: new Date(),
       updatedBy: session.user.name,
     })
-    .where(eq(currencyTable.id, data.currencyId))
+    .where(eq(CurrencyTable.id, data.currencyId))
     .returning()
     .then((res) => res[0]);
 
