@@ -47,7 +47,7 @@ export default async function AdminRootLayout({ children }: PropsWithChildren) {
   return (
     <>
       <TooltipProvider>
-        <div className="flex min-h-screen flex-col">
+        <div className="flex min-h-screen flex-col bg-accent">
           <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-background px-4 pl-0">
             <Link href="#" className="flex h-full w-14 items-center justify-center border-r">
               <LucideIcon name="Store" className="size-8" />
@@ -77,7 +77,7 @@ export default async function AdminRootLayout({ children }: PropsWithChildren) {
             <UserMenu className="flex-none" />
           </header>
           <div className="relative flex flex-1">
-            <aside className="flex w-14 flex-col border-r">
+            <aside className="flex w-14 flex-col border-r bg-background">
               <nav className="box-border flex flex-1 flex-col items-center gap-4 py-2">
                 {sidebarItems.map((item) => (
                   <Tooltip key={item.name}>
@@ -107,8 +107,8 @@ export default async function AdminRootLayout({ children }: PropsWithChildren) {
               </nav>
             </aside>
 
-            <div className="flex max-h-[calc(100vh-theme(space.16))] flex-1 flex-col overflow-y-auto bg-accent">
-              <div className="flex max-h-[calc(100vh-theme(space.16))] flex-1 flex-col p-2">{children}</div>
+            <div className="flex max-h-[calc(100vh-theme(space.16))] flex-1 flex-col overflow-y-auto">
+              <div className="flex max-h-[calc(1000vh-theme(space.16))] flex-1 flex-col p-2">{children}</div>
             </div>
           </div>
         </div>
