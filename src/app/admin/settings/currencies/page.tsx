@@ -58,7 +58,7 @@ export default function Page() {
   });
 
   return (
-    <main className="container flex min-h-[calc(100vh-theme(space.20))] flex-1 flex-col gap-5 rounded-2xl bg-background py-8">
+    <main className="container flex flex-1 flex-col gap-5 rounded-2xl bg-background py-8">
       <section className="relative flex justify-between gap-4">
         <h1 className="flex-1 text-2xl font-bold">Currencies</h1>
         <div className="actions flex gap-4">
@@ -74,7 +74,7 @@ export default function Page() {
           </AddCurrencySheet>
         </div>
       </section>
-        <DataTable loading={isFetching} columns={availableCurrencyColumns} data={data?.availableCurrency} />
+      <DataTable loading={isFetching} columns={availableCurrencyColumns} data={data?.availableCurrency} />
     </main>
   );
 }

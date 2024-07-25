@@ -107,8 +107,8 @@ export default async function AdminRootLayout({ children }: PropsWithChildren) {
               </nav>
             </aside>
 
-            <div className="flex-col flex max-h-[calc(100vh-theme(space.16))] flex-1 bg-accent overflow-y-auto">
-              <div className="max-h-[calc(100vh-theme(space.16))] flex-col flex flex-1 p-2">{children}</div>
+            <div className="flex max-h-[calc(100vh-theme(space.16))] flex-1 flex-col overflow-y-auto bg-accent">
+              <div className="flex max-h-[calc(100vh-theme(space.16))] flex-1 flex-col p-2">{children}</div>
             </div>
           </div>
         </div>

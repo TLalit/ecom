@@ -25,7 +25,7 @@ export default function Page() {
     onError: errorHandler(),
   });
   return (
-    <main className="container flex min-h-[calc(100vh-theme(space.20))] flex-1 flex-col gap-5 rounded-2xl bg-background py-8">
+    <main className="container flex flex-1 flex-col gap-5 rounded-2xl bg-background py-8">
       <h1 className="items-center text-2xl font-bold">Seed Data for missing data</h1>
       <div className="flex flex-col gap-4 bg-white p-4">
         <LoadingButton loading={countryMutation.isPending} onClick={() => countryMutation.mutate()}>

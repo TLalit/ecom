@@ -39,7 +39,7 @@ export default function Page() {
     queryFn: async () => await fetchRegionsAction(),
   });
   return (
-    <main className="container flex min-h-[calc(100vh-theme(space.20))] flex-1 flex-col gap-5 rounded-2xl bg-background py-8">
+    <main className="container flex flex-1 flex-col gap-5 rounded-2xl bg-background py-8">
       <header className="relative flex justify-between gap-5 align-middle">
         <h1 className="flex-1 text-2xl font-bold">Region</h1>
         <article>

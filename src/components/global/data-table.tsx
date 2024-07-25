@@ -219,7 +219,6 @@ export function DataTable<TData extends DataTableState, TValue>({
             </TableRow>
           )}
         </TableBody>
-        
       </Table>
     </ScrollArea>
   );
