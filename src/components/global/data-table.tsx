@@ -19,6 +19,7 @@ import { useCallback, useEffect, useMemo } from "react";
 import { LucideIcon } from "../icons/icon";
 import { Button } from "../ui/button";
 import { Progress } from "../ui/progress";
+import { ScrollArea } from "../ui/scroll-area";
 
 export interface ActionBarProps<TData> {
   selectedRows: TData[];
@@ -144,7 +145,7 @@ export function DataTable<TData extends DataTableState, TValue>({
   }, [searchValue, setGlobalFilter, table]);
 
   return (
-    <>
+    <ScrollArea className="relative flex-1 rounded">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -218,7 +219,8 @@ export function DataTable<TData extends DataTableState, TValue>({
             </TableRow>
           )}
         </TableBody>
+        
       </Table>
-    </>
+    </ScrollArea>
   );
 }

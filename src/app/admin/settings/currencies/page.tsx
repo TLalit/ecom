@@ -74,8 +74,7 @@ export default function Page() {
           </AddCurrencySheet>
         </div>
       </section>
-
-      <DataTable loading={isFetching} columns={availableCurrencyColumns} data={data?.availableCurrency} />
+        <DataTable loading={isFetching} columns={availableCurrencyColumns} data={data?.availableCurrency} />
     </main>
   );
 }

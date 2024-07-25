@@ -4,7 +4,6 @@ import { auth } from "@/auth";
 import { ConfirmationDialog } from "@/components/global/confirmation-dialog";
 import { UserMenu } from "@/components/global/user-menu";
 import { IconProps, LucideIcon } from "@/components/icons/icon";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { RedirectType, redirect } from "next/navigation";
 import { PropsWithChildren } from "react";
@@ -108,9 +107,9 @@ export default async function AdminRootLayout({ children }: PropsWithChildren) {
               </nav>
             </aside>
 
-            <ScrollArea className="flex-co flex max-h-[calc(100vh-theme(space.16))] flex-1 bg-accent">
-              <div className="flex flex-1 flex-col p-2">{children}</div>
-            </ScrollArea>
+            <div className="flex-col flex max-h-[calc(100vh-theme(space.16))] flex-1 bg-accent overflow-y-auto">
+              <div className="max-h-[calc(100vh-theme(space.16))] flex-col flex flex-1 p-2">{children}</div>
+            </div>
           </div>
         </div>
       </TooltipProvider>
