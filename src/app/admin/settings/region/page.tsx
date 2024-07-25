@@ -11,7 +11,7 @@ import {
 import { DataTable, DataTableProps } from "@/components/global/data-table";
 import { LucideIcon } from "@/components/icons/icon";
 import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -122,7 +122,7 @@ const CreateEditRegionSheet = ({
   //Currency Query
   const { data: currencies } = useQuery({
     queryKey: ["fetchCurrency"],
-    queryFn: async () => await getCurrencyAction(),
+    queryFn: () => getCurrencyAction(),
     select(data) {
       return data.currencies;
     },
@@ -131,7 +131,7 @@ const CreateEditRegionSheet = ({
   //Country Query
   const { data: countries } = useQuery({
     queryKey: ["fetchCountry"],
-    queryFn: fetchCountriesAction,
+    queryFn: () => fetchCountriesAction(),
     select(data) {
       return data?.map((country) => {
         return {
@@ -143,6 +143,7 @@ const CreateEditRegionSheet = ({
       });
     },
   });
+  console.log({ isOpen, countries });
 
   //create Region
   const createRegionMutation = useMutation({
@@ -183,22 +184,25 @@ const CreateEditRegionSheet = ({
       onOpenChange((prv) => !prv);
       queryClient.refetchQueries({
         queryKey: ["fetchRegions"],
-      }),
-        queryClient.refetchQueries({
-          queryKey: ["fetchCountry"],
-        });
+      });
+      queryClient.refetchQueries({
+        queryKey: ["fetchCountry"],
+      });
     },
   });
 
+  const defaultValues = useMemo(() => {
+    return mode === "Create"
+      ? {}
+      : {
+          title: row?.original.region,
+          currencyId: row?.original.currencies[0].id,
+          countries: row?.original?.countries?.map((country) => country.id),
+        };
+  }, [mode, row]);
+
   const form = useForm<z.infer<typeof RegionClientSchema>>({
-    defaultValues:
-      mode === "Create"
-        ? {}
-        : {
-            title: row?.original.region,
-            currencyId: row?.original.currencies[0].id,
-            countries: row?.original?.countries?.map((country) => country.id),
-          },
+    defaultValues,
     resolver: zodResolver(RegionClientSchema),
   });
 
@@ -255,49 +259,46 @@ const CreateEditRegionSheet = ({
                   );
                 }}
               />
-              <div className="flex gap-2">
-                <FormField
-                  control={form.control}
-                  name="currencyId"
-                  render={({ field }) => {
-                    return (
-                      <FormItem className="w-1/2">
-                        <FormLabel>Currency</FormLabel>
-                        <FormControl>
-                          <CurrencyDropdown
-                            currencies={currencies}
-                            handleCurrency={handleCurrency}
-                            currencyId={form.getValues("currencyId")}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="countries"
-                  render={({ field: { onChange } }) => {
-                    return (
-                      <FormItem className="w-1/2">
-                        <FormLabel>Countries</FormLabel>
-                        <FormControl>
-                          <MultiSelect
-                            options={countries ?? []}
-                            onValueChange={onChange}
-                            defaultValue={form.getValues("countries") ?? []}
-                            placeholder="Select Countries"
-                            variant="secondary"
-                            animation={2}
-                            maxCount={100}
-                            className="w-full"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    );
-                  }}
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="currencyId"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Currency</FormLabel>
+                      <FormControl>
+                        <CurrencyDropdown
+                          currencies={currencies}
+                          handleCurrency={handleCurrency}
+                          currencyId={form.getValues("currencyId")}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="countries"
+                render={({ field: { onChange } }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Countries</FormLabel>
+                      <FormControl>
+                        <MultiSelect
+                          options={countries ?? []}
+                          onValueChange={onChange}
+                          defaultValue={form.getValues("countries") ?? []}
+                          placeholder="Select Countries"
+                          variant="secondary"
+                          maxCount={3}
+                          className="w-full"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  );
+                }}
+              />
 
               <Button type="submit" variant="outline" className="flex-1">
                 {mode}
@@ -322,51 +323,49 @@ const CurrencyDropdown = ({
     currencyId: "",
     name: "",
   });
-  if (currencyId && !value.currencyId) {
-    setValue({
-      currencyId: currencyId,
-      name: currencies?.find((curr) => curr.id === currencyId)?.name ?? "",
-    });
-  }
-  if (!currencies) return;
+  // if (currencyId && !value.currencyId) {
+  //   setValue({
+  //     currencyId: currencyId,
+  //     name: currencies?.find((curr) => curr.id === currencyId)?.name ?? "",
+  //   });
+  // }
+  const currency = currencies?.find((curr) => curr.id === value.currencyId);
 
   return (
     <Popover>
-      <PopoverTrigger asChild defaultValue={currencyId}>
+      <PopoverTrigger asChild>
         <Button variant="outline" role="combobox" className="w-full justify-between py-5">
-          {value.name ? currencies.find((curr) => curr.name === value.name)?.name : "Choose Currency"}
+          {currency ? currency.name : "Choose Currency"}
           <ChevronsUpDown className="ml-2 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="max-h-5 w-[200px] p-0">
+      <PopoverContent className="max-w-sm p-0">
         <Command>
           <CommandInput placeholder="Search Currency..." />
           <CommandEmpty>No such currency found.</CommandEmpty>
-          <CommandGroup>
-            <CommandList>
-              {currencies?.map((curr) => {
-                return (
-                  <CommandItem
-                    key={curr.id}
-                    value={curr.name}
-                    onSelect={(currentValue) => {
-                      if (currentValue !== value.name) {
-                        //to show the selected currency
-                        setValue({
-                          name: currentValue,
-                          currencyId: curr.id,
-                        });
-                        //trigger another form setValue
-                        handleCurrency(curr.id);
-                      }
-                    }}
-                  >
-                    {curr.name}
-                  </CommandItem>
-                );
-              })}
-            </CommandList>
-          </CommandGroup>
+          <CommandList>
+            {currencies?.map((curr) => {
+              return (
+                <CommandItem
+                  key={curr.id}
+                  value={curr.name}
+                  onSelect={(currentValue) => {
+                    if (currentValue !== value.name) {
+                      //to show the selected currency
+                      setValue({
+                        name: currentValue,
+                        currencyId: curr.id,
+                      });
+                      //trigger another form setValue
+                      handleCurrency(curr.id);
+                    }
+                  }}
+                >
+                  {curr.name}
+                </CommandItem>
+              );
+            })}
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>

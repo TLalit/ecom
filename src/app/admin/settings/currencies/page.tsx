@@ -185,18 +185,14 @@ const availableCurrencyColumns: DataTableProps<GetCurrencyActionResponse["curren
     header: "Default Value",
     accessorKey: "value",
     cell: ({ row }) => {
-      return <div className="">{row.original.symbol}1 USD</div>;
+      return <div className="">1 USD</div>;
     },
   },
   {
     header: "Current Value",
     accessorKey: "code",
-    cell: ({ row }) => {
-      return (
-        <div className="">
-          {`${row.original.symbol}${formatCurrency(row.original.value, "client")} ${row.original.code}`}
-        </div>
-      );
+    accessorFn: (row) => {
+      return `${formatCurrency(row.value, "client")} ${row.code.toUpperCase()}`;
     },
   },
 
@@ -416,9 +412,9 @@ export function DefaultCurrency({
         >
           <span>
             <span className="text-gray-500">Default: </span>
-            {`${defaultCurrencyValue?.symbol} ${defaultCurrencyValue?.name}`}
+            {defaultCurrencyValue && `${defaultCurrencyValue?.symbol} ${defaultCurrencyValue?.name}`}
           </span>
-          {defaultCurrency.isPending ? (
+          {defaultCurrency.isPending || !defaultCurrencyValue ? (
             <LucideIcon name="Loader" className="animate-spin" />
           ) : (
             <LucideIcon name="ChevronDown" />
