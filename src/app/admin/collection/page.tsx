@@ -85,7 +85,7 @@ export default function Page() {
     queryFn: async () => getCollectionAction(),
   });
   return (
-    <main className="container flex min-h-[calc(100vh-theme(space.20))] flex-1 flex-col gap-5 rounded-2xl bg-background py-8">
+    <main className="container flex  flex-1 flex-col gap-5 rounded-2xl bg-background py-8">
       <section className="relative flex items-center justify-between gap-5">
         <h1 className="text-2xl font-bold">Collection</h1>
         <CreateUpdateCollectionSheet mode="Create">
