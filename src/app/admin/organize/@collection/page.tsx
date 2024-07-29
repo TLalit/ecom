@@ -3,7 +3,6 @@ import { LucideIcon } from "@/components/icons/icon";
 import { Button } from "@/components/ui/button";
 import { SheetTrigger } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CategoryTable } from "./CategoryTable";
 import { CollectionTable } from "./CollectionTable";
 import { CreateUpdateCategorySheet } from "./CreateUpdateCategory";
 import { CreateUpdateCollectionSheet } from "./CreateUpdateCollection";
@@ -45,7 +44,6 @@ export default function Page() {
                 </SheetTrigger>
               </CreateUpdateCategorySheet>
             </div>
-            <CategoryTable />
           </section>
         </TabsContent>
       </Tabs>
