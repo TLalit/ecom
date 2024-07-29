@@ -10,10 +10,12 @@ import { z } from "zod";
 import { getPaginationValues } from "./action.helpers";
 import { PaginationParams } from "./action.types";
 
-export interface GetCollectionPayload extends PaginationParams {}
+export interface GetCollectionPayload {
+  pagination?: PaginationParams;
+}
 export type GetCollectionActionResponse = Awaited<ReturnType<typeof getCollectionAction>>;
-export const getCollectionAction = async ({ ...paginationParams }: GetCollectionPayload = {}) => {
-  const { page, limit, offset } = getPaginationValues(paginationParams);
+export const getCollectionAction = async ({ pagination }: GetCollectionPayload = {}) => {
+  const { page, limit, offset } = getPaginationValues(pagination);
   const visibilityArray = [VisibilityEnum.PUBLIC];
   const statusArray = [StatusEnum.ACTIVE];
 
@@ -38,6 +40,7 @@ export const getCollectionAction = async ({ ...paginationParams }: GetCollection
       visibility: CollectionTable.visibility,
     })
     .from(CollectionTable)
+    .leftJoin(UploadTable, eq(CollectionTable.imageId, UploadTable.id))
     .where(
       and(
         isNull(CollectionTable.archivedAt),
@@ -45,7 +48,6 @@ export const getCollectionAction = async ({ ...paginationParams }: GetCollection
         inArray(CollectionTable.visibility, visibilityArray),
       ),
     )
-    .leftJoin(UploadTable, eq(CollectionTable.imageId, UploadTable.id))
     .limit(limit)
     .offset(offset);
 
@@ -158,7 +160,12 @@ export const createCollectionAction = async (payload: z.infer<typeof CreateColle
   const { id } = await db
     .insert(CollectionTable)
     .values({
-      ...data,
+      title: data.title,
+      slug: data.slug,
+      description: data.description,
+      imageId: data.imageId,
+      status: data.status,
+      visibility: data.visibility,
       updatedBy: session?.user.id,
     })
     .returning()
@@ -172,7 +179,11 @@ export const deleteCollectionByIdAction = async ({ id }: { id: string }) => {
   if (!session?.user?.roles.includes("admin")) {
     throw new Error("Unauthorized");
   }
-  return await db.delete(CollectionTable).where(eq(CollectionTable.id, id)).returning({ id: CollectionTable.id });
+  return await db
+    .update(CollectionTable)
+    .set({ archivedAt: new Date() })
+    .where(eq(CollectionTable.id, id))
+    .returning({ id: CollectionTable.id });
 };
 export const editCollectionAction = async (payload: z.infer<typeof EditCollectionSchema>) => {
   const session = await auth();
@@ -187,15 +198,19 @@ export const editCollectionAction = async (payload: z.infer<typeof EditCollectio
       cause: error.errors,
     });
   }
-  const { id: collectionId, ...dataToUpdate } = data;
   const { id } = await db
     .update(CollectionTable)
     .set({
-      ...dataToUpdate,
+      title: data.title,
+      slug: data.slug,
+      description: data.description,
+      imageId: data.imageId,
+      status: data.status,
+      visibility: data.visibility,
       updatedBy: session?.user.id,
       updatedAt: new Date(),
     })
-    .where(eq(CollectionTable.id, collectionId))
+    .where(eq(CollectionTable.id, data.id))
     .returning()
     .then((res) => res[0]);
   return { id };

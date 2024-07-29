@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1720514978555,
-      "tag": "0000_dear_steel_serpent",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1720525192828,
-      "tag": "0001_broken_gunslinger",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1720608377932,
-      "tag": "0002_dizzy_wind_dancer",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1721731107138,
-      "tag": "0003_serious_queen_noir",
+      "when": 1721983230273,
+      "tag": "0000_hot_madame_masque",
       "breakpoints": true
     }
   ]

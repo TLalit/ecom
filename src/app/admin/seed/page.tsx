@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { LoadingButton } from "@/components/ui/loading-button";
 import { errorHandler } from "@/lib/query.helper";
 import { useMutation } from "@tanstack/react-query";
@@ -34,7 +33,6 @@ export default function Page() {
         <LoadingButton loading={currencyMutation.isPending} onClick={() => currencyMutation.mutate()}>
           Seed Currencies
         </LoadingButton>
-        <Button>Seed Users</Button>
       </div>
     </main>
   );

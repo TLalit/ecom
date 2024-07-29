@@ -26,6 +26,20 @@ CREATE TABLE IF NOT EXISTS "authenticator" (
 	CONSTRAINT "authenticator_credential_id_unique" UNIQUE("credential_id")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "category" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"parent_category_id" uuid,
+	"title" text NOT NULL,
+	"slug" text NOT NULL,
+	"rank" integer DEFAULT 0,
+	"image" uuid,
+	"description" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_by" uuid NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"archived_at" timestamp with time zone
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "collection" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"title" text NOT NULL,
@@ -41,6 +55,15 @@ CREATE TABLE IF NOT EXISTS "collection" (
 	CONSTRAINT "collection_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "country" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" text NOT NULL,
+	"display_name" text NOT NULL,
+	"region_id" uuid,
+	"updated_by" uuid NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now()
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "currency" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" text NOT NULL,
@@ -52,8 +75,7 @@ CREATE TABLE IF NOT EXISTS "currency" (
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now(),
 	"updated_by" text NOT NULL,
-	CONSTRAINT "currency_name_unique" UNIQUE("name"),
-	CONSTRAINT "currency_symbol_unique" UNIQUE("symbol")
+	CONSTRAINT "currency_name_unique" UNIQUE("name")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "session" (
@@ -95,6 +117,14 @@ CREATE TABLE IF NOT EXISTS "verification_token" (
 	"token" text NOT NULL,
 	"expires" timestamp NOT NULL,
 	CONSTRAINT "verification_token_identifier_token_pk" PRIMARY KEY("identifier","token")
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "region" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"region" text NOT NULL,
+	"currency_id" uuid NOT NULL,
+	"updated_by" uuid NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now()
 );
 --> statement-breakpoint
 DO $$ BEGIN
