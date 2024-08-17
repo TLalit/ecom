@@ -7,5 +7,8 @@ export const RegionTable = pgTable("region", {
   updatedBy: uuid("updated_by").notNull(),
   updatedAt: timestamp("updated_at", {
     withTimezone: true,
-  }).defaultNow(),
+  })
+    .defaultNow()
+    .$onUpdateFn(() => new Date())
+    .notNull(),
 });

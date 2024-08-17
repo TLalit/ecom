@@ -3,6 +3,7 @@ import { Separator } from "@/components/ui/separator";
 import { Store } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { Fragment } from "react";
 
 export const Footer = () => {
   const workingHours = {
@@ -271,12 +272,12 @@ export const Footer = () => {
               href: "/contact-us",
             },
           ].map((link, i) => (
-            <>
+            <Fragment key={link.label}>
               <Separator orientation="vertical" className="h-4" />
-              <Link key={link.label} href={link.href} className="hover:underline">
+              <Link href={link.href} className="hover:underline">
                 {link.label}
               </Link>
-            </>
+            </Fragment>
           ))}
         </section>
       </footer>

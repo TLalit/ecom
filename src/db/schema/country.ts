@@ -8,5 +8,8 @@ export const CountryTable = pgTable("country", {
   updatedBy: uuid("updated_by").notNull(),
   updatedAt: timestamp("updated_at", {
     withTimezone: true,
-  }).defaultNow(),
+  })
+    .defaultNow()
+    .$onUpdateFn(() => new Date())
+    .notNull(),
 });

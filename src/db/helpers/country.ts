@@ -25,14 +25,13 @@ export const createUpdateCountriesAction = async (
         .update(CountryTable)
         .set({
           regionId: null,
-          updatedAt: new Date(),
           updatedBy: session.user.id,
         })
         .where(eq(CountryTable.regionId, regionId)),
 
       await dbInstance
         .update(CountryTable)
-        .set({ regionId, updatedAt: new Date(), updatedBy: session.user.id })
+        .set({ regionId, updatedBy: session.user.id })
         .where(inArray(CountryTable.id, countryIds))
         .returning({ id: CountryTable.id }),
     ]);
@@ -40,7 +39,7 @@ export const createUpdateCountriesAction = async (
   if (mode === "create") {
     return await db
       .update(CountryTable)
-      .set({ regionId, updatedAt: new Date(), updatedBy: session.user.id })
+      .set({ regionId, updatedBy: session.user.id })
       .where(and(inArray(CountryTable.id, countryIds)))
       .returning({ id: CountryTable.id });
   }
@@ -49,7 +48,6 @@ export const createUpdateCountriesAction = async (
       .update(CountryTable)
       .set({
         regionId: null,
-        updatedAt: new Date(),
         updatedBy: session.user.id,
       })
       .where(eq(CountryTable.regionId, regionId))

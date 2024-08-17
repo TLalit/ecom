@@ -19,7 +19,10 @@ export const CollectionTable = pgTable(
     updatedBy: uuid("updated_by").notNull(),
     updatedAt: timestamp("updated_at", {
       withTimezone: true,
-    }).defaultNow(),
+    })
+      .defaultNow()
+      .$onUpdateFn(() => new Date())
+      .notNull(),
     archivedAt: timestamp("archived_at", {
       withTimezone: true,
     }),

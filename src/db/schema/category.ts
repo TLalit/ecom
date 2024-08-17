@@ -18,6 +18,7 @@ export const CategoryTable = pgTable("category", {
     withTimezone: true,
   })
     .defaultNow()
+    .$onUpdateFn(() => new Date())
     .notNull(),
   archivedAt: timestamp("archived_at", {
     withTimezone: true,

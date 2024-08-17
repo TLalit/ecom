@@ -15,6 +15,9 @@ export const CurrencyTable = pgTable("currency", {
     .notNull(),
   updatedAt: timestamp("updated_at", {
     withTimezone: true,
-  }).defaultNow(),
+  })
+    .defaultNow()
+    .$onUpdateFn(() => new Date())
+    .notNull(),
   updatedBy: text("updated_by").notNull(),
 });
