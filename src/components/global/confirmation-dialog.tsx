@@ -9,13 +9,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { errorHandler } from "@/lib/query.helper";
 import { cn } from "@/lib/utils";
+import { useMutation } from "@tanstack/react-query";
 import { create } from "zustand";
 import { IconProps, LucideIcon } from "../icons/icon";
 import { buttonVariants } from "../ui/button";
-import { useMutation } from "@tanstack/react-query";
-import { errorHandler } from "@/lib/query.helper";
-import { useEffect } from "react";
 
 interface IConfirmationDialog {
   isOpen: boolean;
@@ -51,14 +50,8 @@ export const ConfirmationDialog = () => {
   const confirmMutation = useMutation({
     mutationKey: ["confirmMutation"],
     mutationFn: onConfirm,
-    onSuccess: () => {
-      console.log("success");
-      onOpenChange(false);
-    },
-    onError: (error) => {
-      onOpenChange(false);
-      errorHandler();
-    },
+    onError: errorHandler(),
+    onSettled: () => onOpenChange(false),
   });
 
   const onOpenChange = (isOpen: boolean) => {

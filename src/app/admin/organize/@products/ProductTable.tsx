@@ -18,7 +18,7 @@ import { SheetTrigger } from "@/components/ui/sheet";
 import { errorHandler } from "@/lib/query.helper";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Row } from "@tanstack/react-table";
-import { CreateUpdateCollectionSheet } from "./CreateUpdateCollection";
+import { CreateUpdateProductSheet } from "./CreateUpdateProductSheet";
 const columns: DataTableProps<GetCollectionActionResponse["collections"][0]>["columns"] = [
   { header: "Title", accessorKey: "title", enableSorting: true },
   {
@@ -67,7 +67,7 @@ const ActionsDropdown = ({ row }: { row: Row<GetCollectionActionResponse["collec
   });
 
   return (
-    <CreateUpdateCollectionSheet mode="Edit" row={row.original}>
+    <CreateUpdateProductSheet mode="Edit" row={row.original}>
       <DropdownMenu>
         <DropdownMenuTrigger className="p-2">
           <LucideIcon name="EllipsisVertical" />
@@ -101,10 +101,10 @@ const ActionsDropdown = ({ row }: { row: Row<GetCollectionActionResponse["collec
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    </CreateUpdateCollectionSheet>
+    </CreateUpdateProductSheet>
   );
 };
-export const CollectionTable = () => {
+export const ProductTable = () => {
   const { data, isFetching } = useQuery({
     queryKey: ["getCollectionAction"],
     queryFn: async () => getCollectionAction(),

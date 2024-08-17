@@ -2,6 +2,7 @@
 import { LucideIcon } from "@/components/icons/icon";
 import { Button } from "@/components/ui/button";
 import { SheetTrigger } from "@/components/ui/sheet";
+import { CategoryTable } from "./CategoryTable";
 import { CreateUpdateCategorySheet } from "./CreateUpdateCategory";
 
 export default function Page() {
@@ -18,6 +19,7 @@ export default function Page() {
           </SheetTrigger>
         </CreateUpdateCategorySheet>
       </div>
+      <CategoryTable />
     </section>
   );
 }

@@ -21,17 +21,12 @@ const sidebarItems: {
   {
     name: "Collection",
     icon: "LayoutDashboard",
-    href: "/admin/collection",
+    href: "/admin/organize",
   },
   {
     name: "Orders",
     icon: "ShoppingCart",
     href: "/admin/orders",
-  },
-  {
-    name: "Products",
-    icon: "Package",
-    href: "/admin/products",
   },
   {
     name: "Customers",

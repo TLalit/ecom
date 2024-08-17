@@ -108,10 +108,7 @@ const AddCurrencySheet = ({
       });
       onOpenChange();
     },
-    onError: () => {
-      console.log("addCurrencyHandlerError");
-      errorHandler();
-    },
+    onError: errorHandler(),
   });
   const form = useForm();
   const onSubmit = form.handleSubmit(async (data) => {
@@ -227,10 +224,7 @@ const ActionsDropdown = ({ row }: { row: Row<GetCurrencyActionResponse["currenci
         queryKey: ["getCurrencies"],
       });
     },
-    onError: () => {
-      console.log("deleteAvailableCurrencies");
-      errorHandler();
-    },
+    onError: errorHandler(),
   });
   const editAvailableCurrencies = useMutation({
     mutationKey: ["editAvailableCurrencies"],
@@ -240,10 +234,7 @@ const ActionsDropdown = ({ row }: { row: Row<GetCurrencyActionResponse["currenci
         queryKey: ["getCurrencies"],
       });
     },
-    onError: () => {
-      console.log("editAvailableCurrencies");
-      errorHandler();
-    },
+    onError: errorHandler(),
   });
   return (
     <AddEditValueDialog
@@ -322,7 +313,6 @@ const AddEditValueDialog = ({
   });
 
   const onSubmit = form.handleSubmit((data) => {
-    console.log(data);
     if (mode === "Edit")
       handleEditSubmit?.mutate({
         currencyId,
@@ -342,8 +332,8 @@ const AddEditValueDialog = ({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       {children}
-      <Form {...form}>
-        <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]">
+        <Form {...form}>
           <form
             onSubmit={(e) => {
               e.stopPropagation();
@@ -372,8 +362,8 @@ const AddEditValueDialog = ({
               <Button type="submit">Save changes</Button>
             </DialogFooter>
           </form>
-        </DialogContent>
-      </Form>
+        </Form>
+      </DialogContent>
     </Dialog>
   );
 };
@@ -393,10 +383,7 @@ export function DefaultCurrency({
         queryKey: ["getCurrencies"],
       });
     },
-    onError: () => {
-      console.log("deleteCollectionError");
-      errorHandler();
-    },
+    onError: errorHandler(),
   });
   const defaultCurrencyValue = availableCurrencies.find((curr) => curr.isDefault);
   return (
@@ -411,9 +398,10 @@ export function DefaultCurrency({
         >
           <span>
             <span className="text-gray-500">Default: </span>
+            {!defaultCurrencyValue && "Select Currency"}
             {defaultCurrencyValue && `${defaultCurrencyValue?.symbol} ${defaultCurrencyValue?.name}`}
           </span>
-          {defaultCurrency.isPending || !defaultCurrencyValue ? (
+          {defaultCurrency.isPending ? (
             <LucideIcon name="Loader" className="animate-spin" />
           ) : (
             <LucideIcon name="ChevronDown" />

@@ -111,15 +111,16 @@ export const CreateUpdateCategorySheet = ({
       });
       return;
     }
-    // if (mode === "Edit" && row) {
-    //   await editCategoryMutation.mutateAsync({
-    //     ...data,
-    //     imageId,
-    //     id: row.id,
-    //   });
-    //   return;
-    // }
-  }, console.log);
+    if (mode === "Edit" && row) {
+      await editCategoryMutation.mutateAsync({
+        ...data,
+        imageId,
+        id: row.id,
+        rank: row.rank ?? 0,
+      });
+      return;
+    }
+  });
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -212,7 +213,7 @@ export const CreateUpdateCategorySheet = ({
                 Cancel
               </Button>
               <LoadingButton type="submit" className="flex-1" loading={form.formState.isSubmitting}>
-                {mode}
+                Save
               </LoadingButton>
             </SheetFooter>
           </form>

@@ -1,8 +1,8 @@
 import {
-  GetCollectionActionResponse,
-  deleteCollectionByIdAction,
-  getCollectionAction,
-} from "@/actions/collection.actions";
+  GetCategoriesActionResponse,
+  deleteCategoryByIdAction,
+  getAllCategoriesAction,
+} from "@/actions/category.actions";
 import { confirmBeforeAction } from "@/components/global/confirmation-dialog";
 import { DataTable, DataTableProps } from "@/components/global/data-table";
 import { ImageList } from "@/components/global/image-preview";
@@ -18,8 +18,8 @@ import { SheetTrigger } from "@/components/ui/sheet";
 import { errorHandler } from "@/lib/query.helper";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Row } from "@tanstack/react-table";
-import { CreateUpdateCollectionSheet } from "./CreateUpdateCollection";
-const columns: DataTableProps<GetCollectionActionResponse["collections"][0]>["columns"] = [
+import { CreateUpdateCategorySheet } from "./CreateUpdateCategory";
+const columns: DataTableProps<GetCategoriesActionResponse["categories"][0]>["columns"] = [
   { header: "Title", accessorKey: "title", enableSorting: true },
   {
     header: "Slug",
@@ -52,22 +52,24 @@ const columns: DataTableProps<GetCollectionActionResponse["collections"][0]>["co
     },
   },
 ];
-const ActionsDropdown = ({ row }: { row: Row<GetCollectionActionResponse["collections"][0]> }) => {
+const ActionsDropdown = ({ row }: { row: Row<GetCategoriesActionResponse["categories"][0]> }) => {
   const queryClient = useQueryClient();
 
-  const deleteCollection = useMutation({
-    mutationKey: ["deleteCollection"],
-    mutationFn: deleteCollectionByIdAction,
+  const deleteCategory = useMutation({
+    mutationKey: ["deleteCategory"],
+    mutationFn: deleteCategoryByIdAction,
     onSuccess: () => {
       queryClient.refetchQueries({
-        queryKey: ["getCollectionAction"],
+        queryKey: ["getAllCategoriesAction"],
       });
     },
-    onError: errorHandler(),
+    onError: () => {
+      errorHandler();
+    },
   });
 
   return (
-    <CreateUpdateCollectionSheet mode="Edit" row={row.original}>
+    <CreateUpdateCategorySheet mode="Edit" row={row.original}>
       <DropdownMenu>
         <DropdownMenuTrigger className="p-2">
           <LucideIcon name="EllipsisVertical" />
@@ -94,20 +96,20 @@ const ActionsDropdown = ({ row }: { row: Row<GetCollectionActionResponse["collec
           <DropdownMenuSeparator />
           <DropdownMenuItem
             destructive
-            onClick={() => confirmBeforeAction(() => deleteCollection.mutateAsync({ id: row.original.id }))}
+            onClick={() => confirmBeforeAction(() => deleteCategory.mutateAsync({ id: row.original.id }))}
           >
             <LucideIcon name="Trash" />
             <span>Delete</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    </CreateUpdateCollectionSheet>
+    </CreateUpdateCategorySheet>
   );
 };
-export const CollectionTable = () => {
+export const CategoryTable = () => {
   const { data, isFetching } = useQuery({
-    queryKey: ["getCollectionAction"],
-    queryFn: async () => getCollectionAction(),
+    queryKey: ["getAllCategoriesAction"],
+    queryFn: async () => getAllCategoriesAction(),
   });
-  return <DataTable loading={isFetching} columns={columns} data={data?.collections} />;
+  return <DataTable loading={isFetching} columns={columns} data={data?.categories} />;
 };

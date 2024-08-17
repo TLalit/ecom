@@ -143,7 +143,6 @@ const CreateEditRegionSheet = ({
       });
     },
   });
-  console.log({ isOpen, countries });
 
   //create Region
   const createRegionMutation = useMutation({
@@ -382,10 +381,7 @@ const ActionsDropdown = ({ row }: { row: Row<fetchRegionsActionResponse["regions
         queryKey: ["fetchRegions"],
       });
     },
-    onError: () => {
-      console.log("deleteAvailableCurrencies");
-      errorHandler();
-    },
+    onError: errorHandler(),
   });
   return (
     <CreateEditRegionSheet mode="Edit" row={row}>

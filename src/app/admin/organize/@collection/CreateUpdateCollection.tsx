@@ -257,7 +257,7 @@ export const CreateUpdateCollectionSheet = ({
                 Cancel
               </Button>
               <LoadingButton type="submit" className="flex-1" loading={form.formState.isSubmitting}>
-                {mode}
+                Save
               </LoadingButton>
             </SheetFooter>
           </form>

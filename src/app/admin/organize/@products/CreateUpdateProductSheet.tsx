@@ -1,16 +1,23 @@
-import { GetCategoriesActionResponse, createCategoryAction, editCategoryAction } from "@/actions/category.actions";
+import {
+  GetCollectionActionResponse,
+  createCollectionAction,
+  editCollectionAction,
+} from "@/actions/collection.actions";
 import { FileUploader } from "@/components/global/file-upload";
 import { ImageList } from "@/components/global/image-preview";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { LoadingButton } from "@/components/ui/loading-button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
+import { collectionStatusOptions, visibilityStatusOptions } from "@/constants";
 import { useFileUploadMutation } from "@/hooks/apiHooks";
 import { errorHandler } from "@/lib/query.helper";
 import { generateSlug } from "@/lib/string.helper";
-import { CreateCategorySchema } from "@/validators/category.validators";
+import { StatusEnum } from "@/types/collection.api.types";
+import { CreateCollectionSchema } from "@/validators/collection.validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PropsWithChildren, useState } from "react";
@@ -18,10 +25,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const createCategoryClientSchema = CreateCategorySchema.omit({
+const createCollectionClientSchema = CreateCollectionSchema.omit({
   imageId: true,
-  parentCategoryId: true,
-  rank: true,
 }).merge(
   z.object({
     image: z
@@ -36,90 +41,81 @@ const createCategoryClientSchema = CreateCategorySchema.omit({
   }),
 );
 
-export const CreateUpdateCategorySheet = ({
+export const CreateUpdateProductSheet = ({
   children,
   mode,
   row,
 }: PropsWithChildren<{
   mode: "Create" | "Edit";
-  row?: GetCategoriesActionResponse["categories"][0];
+  row?: GetCollectionActionResponse["collections"][0];
 }>) => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const form = useForm<z.infer<typeof createCategoryClientSchema>>({
-    defaultValues:
-      mode === "Create"
-        ? {
-            description: "",
-            image: [],
-            slug: "",
-            title: "",
-          }
-        : {
-            description: row?.description ?? null,
-            image: row?.image ? [row?.image] : [],
-            slug: row?.slug,
-            title: row?.title,
-          },
-    resolver: zodResolver(createCategoryClientSchema),
+
+  const form = useForm<z.infer<typeof createCollectionClientSchema>>({
+    defaultValues: {
+      description: row?.description ?? null,
+      image: row?.image ? [row?.image] : [],
+      slug: row?.slug,
+      status: row?.status ?? StatusEnum.ACTIVE,
+      title: row?.title,
+      visibility: row?.visibility,
+    },
+    resolver: zodResolver(createCollectionClientSchema),
   });
   const onOpenChange = (value?: boolean) => {
     form.reset();
     setOpen((p) => value ?? !p);
   };
   const fileUploadMutation = useFileUploadMutation();
-  const createCategoryMutation = useMutation({
+  const createCollectionMutation = useMutation({
     onError: errorHandler(),
-    mutationFn: createCategoryAction,
+    mutationFn: createCollectionAction,
     onSuccess: () => {
       onOpenChange(false);
-      toast.success("Category created successfully");
+      toast.success("Collection created successfully");
       queryClient.refetchQueries({
-        queryKey: ["getAllCategoriesAction"],
+        queryKey: ["getCollectionAction"],
       });
     },
   });
-  const editCategoryMutation = useMutation({
+  const editCollectionMutation = useMutation({
     onError: errorHandler(),
-    mutationFn: editCategoryAction,
+    mutationFn: editCollectionAction,
     onSuccess: () => {
       onOpenChange(false);
-      toast.success("Category created successfully");
+      toast.success("Collection created successfully");
       queryClient.refetchQueries({
-        queryKey: ["getAllCategoriesAction"],
+        queryKey: ["getCollectionAction"],
       });
     },
   });
-  const onSubmit = form.handleSubmit(async (data) => {
-    let imageId = data.image[0].id ?? "";
-    if (data.image[0]?.file) {
+  const onSubmit = form.handleSubmit(async ({ image, ...data }) => {
+    let imageId = image[0].id ?? "";
+    if (image[0]?.file) {
       const { id } = await fileUploadMutation.mutateAsync({
-        file: data.image[0]?.file,
+        file: image[0]?.file,
         assetType: "image",
         entityType: "collection",
       });
       imageId = id;
     }
     if (mode === "Create") {
-      await createCategoryMutation.mutateAsync({
-        slug: data.slug,
-        title: data.title,
-        description: data.description,
+      await createCollectionMutation.mutateAsync({
+        ...data,
         imageId,
-        rank: 0,
-        parentCategoryId: row?.id ?? null,
       });
       return;
     }
-    // if (mode === "Edit" && row) {
-    //   await editCategoryMutation.mutateAsync({
-    //     ...data,
-    //     imageId,
-    //     id: row.id,
-    //   });
-    //   return;
-    // }
-  }, console.log);
+    if (mode === "Edit" && row) {
+      await editCollectionMutation.mutateAsync({
+        ...data,
+        imageId,
+        id: row.id,
+      });
+      return;
+    }
+  });
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -128,7 +124,7 @@ export const CreateUpdateCategorySheet = ({
         <SheetContent className="flex">
           <form onSubmit={onSubmit} className="flex flex-1 flex-col gap-5">
             <SheetHeader>
-              <SheetTitle>{mode} Category</SheetTitle>
+              <SheetTitle>{mode} Collection</SheetTitle>
             </SheetHeader>
             <div className="flex gap-4">
               <FormField
@@ -177,7 +173,56 @@ export const CreateUpdateCategorySheet = ({
                 </FormItem>
               )}
             />
-
+            <div className="flex gap-4">
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Status</FormLabel>
+                    <FormControl>
+                      <Select {...field} onValueChange={field.onChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {collectionStatusOptions.map((status) => (
+                            <SelectItem key={status.value} value={status.value}>
+                              {status.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="visibility"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Visibility</FormLabel>
+                    <FormControl>
+                      <Select {...field} onValueChange={field.onChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {visibilityStatusOptions.map((status) => (
+                            <SelectItem key={status.value} value={status.value}>
+                              {status.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="image"
@@ -212,7 +257,7 @@ export const CreateUpdateCategorySheet = ({
                 Cancel
               </Button>
               <LoadingButton type="submit" className="flex-1" loading={form.formState.isSubmitting}>
-                {mode}
+                Save
               </LoadingButton>
             </SheetFooter>
           </form>
