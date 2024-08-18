@@ -22,13 +22,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/
 import { Input } from "@/components/ui/input";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { errorHandler } from "@/lib/query.helper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Row } from "@tanstack/react-table";
 import { ChevronsUpDown } from "lucide-react";
-import { PropsWithChildren, useCallback, useMemo, useState } from "react";
+import { PropsWithChildren, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -127,6 +128,9 @@ const CreateEditRegionSheet = ({
       return data.currencies;
     },
   });
+  const availableCurrencies = useMemo(() => {
+    return currencies?.filter((currency) => currency.isAvailable);
+  }, [currencies]);
 
   //Country Query
   const { data: countries } = useQuery({
@@ -221,13 +225,6 @@ const CreateEditRegionSheet = ({
       });
   });
 
-  const handleCurrency = useCallback(
-    (currencyId: string) => {
-      form.setValue("currencyId", currencyId);
-    },
-    [form],
-  );
-
   return (
     <Sheet
       open={isOpen}
@@ -266,11 +263,20 @@ const CreateEditRegionSheet = ({
                     <FormItem>
                       <FormLabel>Currency</FormLabel>
                       <FormControl>
-                        <CurrencyDropdown
-                          currencies={currencies}
-                          handleCurrency={handleCurrency}
-                          currencyId={form.getValues("currencyId")}
-                        />
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Currency" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableCurrencies?.map((currency) => {
+                              return (
+                                <SelectItem key={currency.id} value={currency.id}>
+                                  {currency.name}
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                     </FormItem>
                   );
@@ -300,7 +306,7 @@ const CreateEditRegionSheet = ({
               />
 
               <Button type="submit" variant="outline" className="flex-1">
-                {mode}
+                Save
               </Button>
             </div>
           </form>
@@ -312,23 +318,13 @@ const CreateEditRegionSheet = ({
 const CurrencyDropdown = ({
   currencies,
   handleCurrency,
-  currencyId,
+  value,
 }: {
   currencies?: GetCurrencyActionResponse["currencies"][0][];
   handleCurrency: (currencyId: string) => void;
-  currencyId?: string | undefined;
+  value?: string | undefined;
 }) => {
-  const [value, setValue] = useState({
-    currencyId: "",
-    name: "",
-  });
-  // if (currencyId && !value.currencyId) {
-  //   setValue({
-  //     currencyId: currencyId,
-  //     name: currencies?.find((curr) => curr.id === currencyId)?.name ?? "",
-  //   });
-  // }
-  const currency = currencies?.find((curr) => curr.id === value.currencyId);
+  const currency = currencies?.find((curr) => curr.id === value);
 
   return (
     <Popover>
@@ -338,28 +334,14 @@ const CurrencyDropdown = ({
           <ChevronsUpDown className="ml-2 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="max-w-sm p-0">
+      <PopoverContent className="p-0">
         <Command>
           <CommandInput placeholder="Search Currency..." />
           <CommandEmpty>No such currency found.</CommandEmpty>
           <CommandList>
             {currencies?.map((curr) => {
               return (
-                <CommandItem
-                  key={curr.id}
-                  value={curr.name}
-                  onSelect={(currentValue) => {
-                    if (currentValue !== value.name) {
-                      //to show the selected currency
-                      setValue({
-                        name: currentValue,
-                        currencyId: curr.id,
-                      });
-                      //trigger another form setValue
-                      handleCurrency(curr.id);
-                    }
-                  }}
-                >
+                <CommandItem key={curr.id} value={curr.id} onSelect={handleCurrency}>
                   {curr.name}
                 </CommandItem>
               );
