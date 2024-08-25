@@ -51,7 +51,7 @@ export const UserMenu = ({ className, ...rest }: HTMLAttributes<HTMLDivElement>)
               <LucideIcon name="Headset" />
               <span>Support</span>
             </DropdownMenuItem>
-            {user?.roles?.includes("admin") && (
+            {(user?.roles?.includes("admin") || user?.roles?.includes("manager")) && (
               <DropdownMenuItem asChild>
                 <Link href="/admin">
                   <LucideIcon name="UserCog" />

@@ -1,6 +1,8 @@
 import { Container } from "@/components/global";
 import { LucideIcon } from "@/components/icons/icon";
 import { Button } from "@/components/ui/button";
+import { SheetTrigger } from "@/components/ui/sheet";
+import { CreateUpdateTeam } from "./CreateUpdateTeam";
 import { TeamTable } from "./TeamTable";
 
 export default function Page() {
@@ -12,10 +14,14 @@ export default function Page() {
           <span>Manage the team for your store</span>
         </div>
         <div className="actions flex gap-4">
-          <Button>
-            <LucideIcon name="Plus" />
-            <span>Add </span>
-          </Button>
+          <CreateUpdateTeam mode="Create">
+            <SheetTrigger asChild>
+              <Button>
+                <LucideIcon name="Plus" />
+                <span>Add </span>
+              </Button>
+            </SheetTrigger>
+          </CreateUpdateTeam>
         </div>
       </section>
       <TeamTable />
