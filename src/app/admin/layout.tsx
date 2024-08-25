@@ -15,7 +15,7 @@ const sidebarItems: {
 }[] = [
   {
     name: "Dashboard",
-    icon: "Home",
+    icon: "House",
     href: "/admin",
   },
   {

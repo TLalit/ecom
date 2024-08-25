@@ -1,14 +1,14 @@
-import type {
+import { and, eq, isNull, sql } from "drizzle-orm";
+import { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core";
+import { DefaultSession } from "next-auth";
+import {
   Adapter,
   AdapterAccount,
   AdapterAuthenticator,
   AdapterSession,
   AdapterUser,
   VerificationToken,
-} from "@auth/core/adapters";
-import { and, eq, isNull, sql } from "drizzle-orm";
-import { PgDatabase, QueryResultHKT } from "drizzle-orm/pg-core";
-import { DefaultSession } from "next-auth";
+} from "next-auth/adapters";
 import {
   AccountTable,
   AuthenticatorTable,
@@ -20,7 +20,7 @@ import {
 } from "./db/schema";
 import { getFirst } from "./lib/array.helpers";
 const selectRoles = sql<string[]>`COALESCE(json_agg(role) FILTER (WHERE user_role.role IS NOT NULL), '[]')`;
-export function authAdapter(client: PgDatabase<QueryResultHKT, any>): Adapter {
+export function authAdapter(client: PgDatabase<PgQueryResultHKT, any>): Adapter {
   return {
     async createUser(data: AdapterUser) {
       const res = await client
@@ -232,6 +232,6 @@ declare module "next-auth" {
     };
   }
 }
-declare module "@auth/core/adapters" {
+declare module "next-auth/adapters" {
   interface AdapterUser extends TSelectUser {}
 }

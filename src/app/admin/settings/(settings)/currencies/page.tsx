@@ -368,7 +368,7 @@ const AddEditValueDialog = ({
   );
 };
 
-export function DefaultCurrency({
+function DefaultCurrency({
   availableCurrencies,
 }: {
   availableCurrencies: GetCurrencyActionResponse["currencies"][0][];
