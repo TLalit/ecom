@@ -20,11 +20,24 @@ export const productCollectionTable = pgTable("product_collection", {
   collectionId: uuid("collection_id").references(() => CollectionTable.id),
 });
 
-export const productImagesTable = pgTable("product_images", {
+export const productImageTable = pgTable("product_images", {
   id: uuid("id").defaultRandom().notNull().primaryKey(),
   productId: uuid("product_id").references(() => productTable.id),
   variantId: uuid("variant_id").references(() => productVariantTable.id),
   imageId: uuid("image_id").references(() => UploadTable.id),
+  order: integer("order").default(0),
+});
+
+export const productVariantOptionTable = pgTable("product_variant_option", {
+  id: uuid("id").defaultRandom().notNull().primaryKey(),
+  name: text("name").notNull(),
+});
+
+export const productVariantOptionValueTable = pgTable("product_variant_option_value", {
+  id: uuid("id").defaultRandom().notNull().primaryKey(),
+  optionId: uuid("variant_option_id").references(() => productVariantOptionTable.id),
+  name: text("name").notNull(),
+  metaData: jsonb("meta_data").notNull(),
 });
 
 export const productVariantTable = pgTable("product_variants", {
@@ -35,18 +48,6 @@ export const productVariantTable = pgTable("product_variants", {
   midCode: text("mid_code"),
   material: text("material"),
   inventory_quantity: integer("inventory_quantity").default(0),
-});
-
-export const productOptionTable = pgTable("product_options", {
-  id: uuid("id").defaultRandom().notNull().primaryKey(),
-  productId: uuid("product_id").references(() => productTable.id),
-  title: text("title").notNull(),
-});
-
-export const productOptionValueTable = pgTable("product_option_values", {
-  id: uuid("id").defaultRandom().notNull().primaryKey(),
-  variantId: uuid("variant_id").references(() => productVariantTable.id),
-  optionId: uuid("option_id").references(() => productOptionTable.id),
-  value: text("value").notNull(),
-  metaData: jsonb("meta_data"),
+  price: integer("price").default(0),
+  variantValueId: uuid("variant_value_id").references(() => productVariantOptionValueTable.id),
 });

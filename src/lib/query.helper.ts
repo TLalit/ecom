@@ -15,6 +15,8 @@ export const errorHandler =
         return;
       }
     }
+    console.log(error);
+
     toast.error("Something went wrong.", {
       description: "Please try again later.",
     });

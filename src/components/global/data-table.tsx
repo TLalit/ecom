@@ -7,6 +7,7 @@ import {
   OnChangeFn,
   RowSelectionState,
   SortingState,
+  TableOptions,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -32,20 +33,17 @@ export interface DataTableProps<TData, TValue = any> {
   multiRowSelection?: boolean;
   rowSelectionKey?: string;
   searchKey?: string;
+  getRowId?: TableOptions<TData>["getRowId"];
 }
 
-interface DataTableState {
-  id: string;
-  className?: string;
-}
-
-export function DataTable<TData extends DataTableState, TValue>({
+export function DataTable<TData, TValue>({
   columns,
   data = [],
   loading = false,
   multiRowSelection = false,
   rowSelectionKey = "selectedRowIds",
   searchKey = "search",
+  getRowId,
 }: DataTableProps<TData, TValue>) {
   const { searchParams, setSearchParams } = useQueryParams();
   const searchValue = useMemo(() => searchParams?.get(searchKey) ?? "", [searchKey, searchParams]);
@@ -120,10 +118,10 @@ export function DataTable<TData extends DataTableState, TValue>({
     [multiRowSelection, rowSelection, setSearchParams, rowSelectionKey],
   );
 
-  const table = useReactTable({
+  const table = useReactTable<TData>({
     data,
     columns,
-    getRowId: (row) => row.id,
+    getRowId: getRowId,
     onSortingChange,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
